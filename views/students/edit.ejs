@@ -1,0 +1,152 @@
+<%- include('../layouts/navbar.ejs') %> <%- include('../layouts/sidebar.ejs') %>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">Student Edit</h1>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Student Edit</li>
+          </ol>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Edit Student</h3>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <form
+            action="/studentUpdate/<%= edit._id %>"
+            method="post"
+            enctype="multipart/form-data"
+          >
+            <div class="form-group">
+              <label for="">RollNo</label>
+              <input
+                type="text"
+                name="rollNumber"
+                class="form-control"
+                required
+                value="<%= edit.rollNumber %>"
+              />
+            </div>
+            <div class="form-group">
+              <label for="">Name</label>
+              <input
+                type="text"
+                name="name"
+                value="<%= edit.name %>"
+                class="form-control"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="">Address</label>
+              <textarea name="address" class="form-control" required>
+<%= edit.address %></textarea
+              >
+            </div>
+            <div class="form-group">
+              <label for="">Gender</label>
+              <select name="gender" class="form-control" required>
+                <option value="">Select Gender</option>
+                <option value="male" <%= edit.gender === 'male' ? 'selected' : '' %>>Male</option>
+                <option value="female" <%= edit.gender === 'female' ? 'selected' : '' %>>FeMale</option>
+              </select>
+              
+            </div>
+
+            <div class="form-group">
+              <label for="">Email</label>
+              <input
+                type="email"
+                name="email"
+                class="form-control"
+                value="<%= edit.email %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="">dob</label>
+              <% const formattedDOB = new
+              Date(edit.dob).toISOString().split('T')[0]; %>
+              <input
+                type="date"
+                name="dob"
+                class="form-control"
+                value="<%= formattedDOB %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="">Phone</label>
+              <input
+                type="number"
+                name="phone"
+                class="form-control"
+                value="<%= edit.phone %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="">Branch</label>
+              <input
+                type="text"
+                name="branch"
+                class="form-control"
+                value="<%= edit.branch %>"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label for="">Semester</label>
+              <input
+                type="text"
+                name="semester"
+                class="form-control"
+                value="<%= edit.semester %>"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="">Image</label>
+              <input type="file" name="image" class="form-control"  />
+            </div>
+            <img src="<%= edit.image.url %>" alt="" width="200" />
+            <br /><br />
+
+            <button type="submit" class="btn btn-info">Update</button>
+          </form>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<%- include('../layouts/footer.ejs') %>

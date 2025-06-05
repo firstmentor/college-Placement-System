@@ -1,0 +1,58 @@
+<script>
+    const allowedBranches = "CS, IT, Mechanical ";
+   const branchesArray = allowedBranches?.split(",")
+   //.split(",") एक string को comma , से अलग-अलग हिस्सों (array) में तोड़ देता है।
+//    .map((b) => b.trim())
+
+
+
+    console.log(branchesArray);
+// Output: ["CS", "IT", "Mechanical"]
+
+
+const arr = ["  CS", " IT ", "Mechanical  "];
+const trimmedArr = arr.map(b => b.trim());
+
+console.log(trimmedArr);
+// Output: ["CS", "IT", "Mechanical"]
+
+</script>
+
+
+
+
+<!-- Step-by-step explanation:
+allowedBranches?.split(",")
+
+यह optional chaining (?.) है।
+
+इसका मतलब है: अगर allowedBranches undefined या null नहीं है, तभी .split(",") को चलाओ।
+
+.split(",") एक string को comma , से अलग-अलग हिस्सों (array) में तोड़ देता है।
+
+उदाहरण: "CS,IT,Mechanical" → ["CS", "IT", "Mechanical"]
+
+.map((b) => b.trim())
+
+यह हर array element पर काम करता है।
+
+.trim() से हर string के शुरुआत और अंत के खाली spaces हट जाते हैं।
+
+उदाहरण: " CS " → "CS"
+
+मतलब, "CS, IT, Mechanical " जैसी input से spaces हटाकर clean array बनाता है:
+["CS", "IT", "Mechanical"] -->
+
+
+<!-- map हर element पर ये function चलाता है और वापस एक नया array बनाता है जिसमें spaces हटाए गए होते हैं। -->
+
+
+
+<!-- // Traditional function
+function(b) {
+  return b.trim();
+}
+
+// Arrow function (same as above)
+b => b.trim() -->
+

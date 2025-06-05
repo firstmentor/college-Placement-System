@@ -53,12 +53,63 @@
             <li class="nav-item"><a href="/company/display" class="nav-link active"><i class="far fa-circle nav-icon"></i><p>Display</p></a></li>
           </ul>
         </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link active">
+            <i class="nav-icon fas fa-building"></i>
+            <p>Openings <i class="right fas fa-angle-left"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a href="/alljobs" class="nav-link active"><i class="far fa-circle nav-icon"></i><p>Display</p></a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link active">
+            <i class="nav-icon fas fa-building"></i>
+            <p>Selected Student <i class="right fas fa-angle-left"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a href="/SelectedStudent/display" class="nav-link active"><i class="far fa-circle nav-icon"></i><p>Display</p></a></li>
+          </ul>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link active">
+            <i class="nav-icon fas fa-building"></i>
+            <p>College Info<i class="right fas fa-angle-left"></i></p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item"><a href="/collegeInfo/display" class="nav-link active"><i class="far fa-circle nav-icon"></i><p>Display</p></a></li>
+          </ul>
+        </li>
+       
       <% } else if(role === 'student') { %>
         <!-- Student ke liye -->
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link active">
             <i class="nav-icon fas fa-user-graduate"></i>
             <p>Student Dashboard</p>
+          </a>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="/uddateinfoStudent" class="nav-link active">
+            <i class="nav-icon fas fa-user-graduate"></i>
+            <p>UpdateI Info</p>
+          </a>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="/student/jobs" class="nav-link active">
+            <i class="nav-icon fas fa-user-graduate"></i>
+            <p>Openings</p>
+          </a>
+        </li>
+        <li class="nav-item has-treeview">
+          <a href="/appliedJob" class="nav-link active">
+            <i class="nav-icon fas fa-user-graduate"></i>
+            <p>Applied Jobs</p>
           </a>
         </li>
       <% } else if(role === 'hod') { %>
@@ -69,6 +120,20 @@
             <p>HOD Dashboard</p>
           </a>
         </li>
+
+        <li class="nav-item has-treeview">
+          <a href="/student/display" class="nav-link active">
+            <i class="nav-icon fas fa-chalkboard-teacher"></i>
+            <p>Students</p>
+          </a>
+        </li>
+
+        <li class="nav-item has-treeview">
+          <a href="/Openings" class="nav-link active">
+            <i class="nav-icon fas fa-chalkboard-teacher"></i>
+            <p>Placement Drive</p>
+          </a>
+        </li>
       <% } else if(role === 'company') { %>
         <!-- Company ke liye -->
         <li class="nav-item has-treeview">
@@ -77,7 +142,29 @@
             <p>Company Dashboard</p>
           </a>
         </li>
+
+        <li class="nav-item has-treeview">
+          <a href="/company/jobs" class="nav-link active">
+            <i class="nav-icon fas fa-building"></i>
+            <p>Job</p>
+          </a>
+        </li>
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link active">
+            <i class="nav-icon fas fa-building"></i>
+            <p>Application</p>
+          </a>
+        </li>
       <% } %>
+
+      <!-- Logout for all -->
+      <li class="nav-item">
+        <a href="/chnagePassword" class="nav-link">
+          <i class="nav-icon fas fa-sign-out-alt"></i>
+          <p>Change Password</p>
+        </a>
+      </li>
+      
 
       <!-- Logout for all -->
       <li class="nav-item">

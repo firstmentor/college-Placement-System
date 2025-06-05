@@ -1,0 +1,520 @@
+<%- include('../layouts/navbar.ejs') %> <%- include('../layouts/sidebar.ejs') %>
+<!-- Bootstrap 5 JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">All Jobs</h1>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">HOD Page</li>
+          </ol>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+          <button
+            type="button"
+            class="btn btn-info"
+            data-toggle="modal"
+            data-target="#modal-default"
+          >
+            Add Jobs
+          </button>
+          <% if(success.length> 0){ %>
+            <div class="alert alert-success">
+                <!-- To print -->
+                <%= success %>
+            </div>
+            <% } %>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>S.No</th>
+                <th>Company Name</th>
+                <th>Designation</th>
+                <th>12th Percentage</th>
+                <th>Graduation CGPA</th>
+                <th>Salary Package</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% jobs.forEach((job, index) => { %>
+              <tr>
+                <td><%= index + 1 %></td>
+                <td><%= job.companyId.name || 'Company' %></td>
+                <td><%= job.title %></td>
+                <td><%= job.requirements?.min12Percent || 'N/A' %>%</td>
+                <td><%= job.requirements?.minCGPA || 'N/A' %></td>
+                <td><%= job.salary %></td>
+                <td>
+                  <!-- View Button -->
+                  <button
+                    class="btn btn-sm btn-info"
+                    data-bs-toggle="modal"
+                    data-bs-target="#viewJobModal<%= job._id %>"
+                  >
+                    View
+                  </button>
+
+                  <!-- Edit Button (open modal) -->
+                  <button
+                    class="btn btn-sm btn-warning"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editJobModal<%= job._id %>"
+                  >
+                    Edit
+                  </button>
+
+                  <!-- Delete Form -->
+                  <form
+                    action="/company/jobs/delete/<%= job._id %>"
+                    method="POST"
+                    style="display: inline"
+                  >
+                    <button
+                      type="submit"
+                      class="btn btn-sm btn-danger"
+                      onclick="return confirm('Are you sure you want to delete this job?')"
+                    >
+                      Delete
+                    </button>
+                  </form>
+                </td>
+              </tr>
+
+              <!-- ✅ Bootstrap Modal for View Job -->
+              <div class="modal fade" id="viewJobModal<%= job._id %>" tabindex="-1" role="dialog" aria-labelledby="viewJobModalLabel<%= job._id %>" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header bg-info text-white">
+                      <h5 class="modal-title" id="viewJobModalLabel<%= job._id %>">Job Details: <%= job.title %></h5>
+                      <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <p><strong>Designation:</strong> <%= job.title %></p>
+                      <p><strong>Description:</strong> <%= job.description %></p>
+                      <p><strong>Salary:</strong> <%= job.salary || 'N/A' %></p>
+                      <p><strong>Location:</strong> <%= job.location || 'N/A' %></p>
+                      <p><strong>Department:</strong> <%= job.department || 'N/A' %></p>
+              
+                      <hr>
+              
+                      <h6>Eligibility Criteria</h6>
+                      <p><strong>12th Minimum %:</strong> <%= job.requirements?.min12Percent || 'N/A' %></p>
+                      <p><strong>Graduation Minimum CGPA:</strong> <%= job.requirements?.minCGPA || 'N/A' %></p>
+                      <p><strong>Allowed Backlogs:</strong> <%= job.requirements?.maxBacklogs || 'N/A' %></p>
+                      <p><strong>Skills Required:</strong> <%= (job.requirements?.skillsRequired && job.requirements.skillsRequired.length) ? job.requirements.skillsRequired.join(', ') : 'N/A' %></p>
+                      <p><strong>Allowed Branches:</strong> <%= (job.requirements?.allowedBranches && job.requirements.allowedBranches.length) ? job.requirements.allowedBranches.join(', ') : 'N/A' %></p>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- ✅ Bootstrap Modal for View Job -->
+
+              <!-- ✏️ Edit Job Modal (Bootstrap 4) -->
+              <div
+                class="modal fade"
+                id="editJobModal<%= job._id %>"
+                tabindex="-1"
+                role="dialog"
+                aria-labelledby="editJobModalLabel<%= job._id %>"
+                aria-hidden="true"
+              >
+                <div class="modal-dialog modal-lg" role="document">
+                  <div class="modal-content">
+                    <form
+                      action="/company/jobs/Update/<%= job._id %>"
+                      method="POST"
+                    >
+                      <div class="modal-header bg-warning">
+                        <h5
+                          class="modal-title"
+                          id="editJobModalLabel<%= job._id %>"
+                        >
+                          Edit Job: <%= job.title %>
+                        </h5>
+                        <button
+                          type="button"
+                          class="close"
+                          data-dismiss="modal"
+                          aria-label="Close"
+                        >
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+
+                      <div class="modal-body">
+                        <div class="form-group">
+                          <label>Designation</label>
+                          <input
+                            type="text"
+                            name="title"
+                            class="form-control"
+                            value="<%= job.title %>"
+                            required
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Description</label>
+                          <textarea
+                            name="description"
+                            class="form-control"
+                            rows="3"
+                            required
+                          >
+<%= job.description %></textarea
+                          >
+                        </div>
+
+                        <div class="form-group">
+                          <label>Salary</label>
+                          <input
+                            type="text"
+                            name="salary"
+                            class="form-control"
+                            value="<%= job.salary %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Location</label>
+                          <input
+                            type="text"
+                            name="location"
+                            class="form-control"
+                            value="<%= job.location %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Department</label>
+                          <input
+                            type="text"
+                            name="department"
+                            class="form-control"
+                            value="<%= job.department %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>12th Minimum %</label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            name="min12Percent"
+                            class="form-control"
+                            value="<%= job.requirements?.min12Percent %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Graduation Minimum CGPA</label>
+                          <input
+                            type="number"
+                            step="0.1"
+                            name="minCGPA"
+                            class="form-control"
+                            value="<%= job.requirements?.minCGPA %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Allowed Backlogs</label>
+                          <input
+                            type="number"
+                            name="maxBacklogs"
+                            class="form-control"
+                            value="<%= job.requirements?.maxBacklogs %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Skills (comma-separated)</label>
+                          <input
+                            type="text"
+                            name="skillsRequired"
+                            class="form-control"
+                            value="<%= job.requirements?.skillsRequired?.join(', ') %>"
+                          />
+                        </div>
+
+                        <div class="form-group">
+                          <label>Allowed Branches (comma-separated)</label>
+                          <input
+                            type="text"
+                            name="allowedBranches"
+                            class="form-control"
+                            value="<%= job.requirements?.allowedBranches?.join(', ') %>"
+                          />
+                        </div>
+                      </div>
+
+                      <div class="modal-footer">
+                        <button type="submit" class="btn btn-success">
+                          Update
+                        </button>
+                        <button
+                          type="button"
+                          class="btn btn-secondary"
+                          data-dismiss="modal"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+                </div>
+              </div>
+              <!---edit end --->
+
+              <% }); %>
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>S.No</th>
+                <th>Company Name</th>
+                <th>Designation</th>
+                <th>12th Percentage</th>
+                <th>Graduation CGPA</th>
+                <th>Salary Package</th>
+                <th>Action</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<!--model add student-->
+<div class="modal fade" id="modal-default">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Post a New Job</h4>
+
+        <button
+          type="button"
+          class="close"
+          data-dismiss="modal"
+          aria-label="Close"
+        >
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form action="/company/jobs/add" method="POST">
+          <!-- Job Title -->
+          <div class="form-group mb-3">
+            <label for="title">Job Title</label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group mb-3">
+            <label for="description">Job Description</label>
+            <textarea
+              id="description"
+              name="description"
+              class="form-control"
+              rows="5"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Location -->
+          <div class="form-group mb-3">
+            <label for="location">Job Location</label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <!-- Salary -->
+          <div class="form-group mb-3">
+            <label for="salary">Salary / Package</label>
+            <input
+              type="text"
+              id="salary"
+              name="salary"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <!-- Department -->
+          <div class="form-group mb-3">
+            <label for="department">Department</label>
+            <input
+              type="text"
+              id="department"
+              name="department"
+              class="form-control"
+              placeholder="e.g. CSE, IT"
+              required
+            />
+          </div>
+
+          <!-- Job Type -->
+          <div class="form-group mb-3">
+            <label for="jobType">Job Type</label>
+            <select id="jobType" name="jobType" class="form-control">
+              <option value="Full-time">Full-time</option>
+              <option value="Internship">Internship</option>
+              <option value="Contract">Contract</option>
+            </select>
+          </div>
+
+          <!-- Deadline -->
+          <div class="form-group mb-3">
+            <label for="applicationDeadline">Application Deadline</label>
+            <input
+              type="date"
+              id="applicationDeadline"
+              name="applicationDeadline"
+              class="form-control"
+            />
+          </div>
+
+          <hr />
+
+          <h4>Eligibility Criteria</h4>
+
+          <!-- 10th Percent -->
+          <div class="form-group mb-3">
+            <label for="min10Percent">Minimum 10th %</label>
+            <input
+              type="number"
+              name="min10Percent"
+              id="min10Percent"
+              class="form-control"
+              min="0"
+              max="100"
+            />
+          </div>
+
+          <!-- 12th Percent -->
+          <div class="form-group mb-3">
+            <label for="min12Percent">Minimum 12th %</label>
+            <input
+              type="number"
+              name="min12Percent"
+              id="min12Percent"
+              class="form-control"
+              min="0"
+              max="100"
+            />
+          </div>
+
+          <!-- CGPA -->
+          <div class="form-group mb-3">
+            <label for="minCGPA">Minimum Graduation CGPA</label>
+            <input
+              type="number"
+              name="minCGPA"
+              id="minCGPA"
+              class="form-control"
+              min="0"
+              max="10"
+              step="0.1"
+            />
+          </div>
+
+          <!-- Backlogs -->
+          <div class="form-group mb-3">
+            <label for="maxBacklogs">Maximum Allowed Backlogs</label>
+            <input
+              type="number"
+              name="maxBacklogs"
+              id="maxBacklogs"
+              class="form-control"
+              min="0"
+            />
+          </div>
+
+          <!-- Allowed Branches -->
+          <div class="form-group mb-3">
+            <label for="allowedBranches"
+              >Allowed Branches (comma-separated)</label
+            >
+            <input
+              type="text"
+              name="allowedBranches"
+              id="allowedBranches"
+              class="form-control"
+              placeholder="e.g. CSE, IT, ECE"
+            />
+          </div>
+
+          <!-- Skills -->
+          <div class="form-group mb-4">
+            <label for="skillsRequired"
+              >Skills Required (comma-separated)</label
+            >
+            <input
+              type="text"
+              name="skillsRequired"
+              id="skillsRequired"
+              class="form-control"
+              placeholder="e.g. Java, Python, React"
+            />
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-primary">Post Job</button>
+        </form>
+      </div>
+    </div>
+    <!-- /.modal-content -->
+  </div>
+  <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
+
+<%- include('../layouts/footer.ejs') %>

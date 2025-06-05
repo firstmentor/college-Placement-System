@@ -38,6 +38,17 @@
           >
             Add Company
           </button>
+          <% if(error.length> 0){ %>
+            <div class="alert alert-danger">
+              <!-- To print -->
+              <%= error %>
+            </div>
+            <% } %> <% if(success.length> 0){ %>
+            <div class="alert alert-success">
+              <!-- To print -->
+              <%= success %>
+            </div>
+            <% } %>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -45,35 +56,38 @@
             <thead>
               <tr>
                 <th>S.No</th>
-                <th>Name</th>
+                <th>Company Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>image</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>ram</td>
-                <td>ram@gmail.com</td>
-                <td>38786674</td>
-                <td>Btech</td>
-                <td>
-                  <a href="" class="btn btn-info">View</a>
-                  <a href="" class="btn btn-success">Edit</a>
-                  <a href="" class="btn btn-danger">Delete</a>
-                </td>
-              </tr>
-            </tbody>
+              <% company.forEach((item,index)=>{ %>
+                <tr>
+                  <td><%= index+1 %></td>
+                  <td><%= item.name %></td>
+                  <td><%= item.email %></td>
+                  <td><%= item.phone %></td>
+                  <td><img src="<%= item.image.url %>" alt="" width="100"></td>
+                  <td>
+                    <a href="/compnayView/<%= item._id %>" class="btn btn-info">View</a>
+                    <a href="/compnayEdit/<%= item._id %>" class="btn btn-success">Edit</a>
+                    <a href="/compnayDelete/<%= item._id %>" class="btn btn-danger">Delete</a>
+                  </td>
+                </tr>
 
+             <%  }) %>
+              
+            </tbody>
             <tfoot>
               <tr>
                 <th>S.No</th>
-                <th>Name</th>
+                <th>Company Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>image</th>
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -96,7 +110,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Add Student</h4>
+        <h4 class="modal-title">Add Company</h4>
         <button
           type="button"
           class="close"
@@ -107,21 +121,39 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="">
+        <form action="/compnayInsert" method="post" enctype="multipart/form-data">
           <div class="form-group">
-            <label for="">Name</label>
+            <label for="">Compnay Name</label>
             <input type="text" name="name" class="form-control">
           </div>
+
+          <div class="form-group">
+            <label for="">Address:</label>
+            <textarea name="address" id="" class="form-control"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="">Website</label>
+            <input type="text" name="website" class="form-control">
+          </div>
+
           <div class="form-group">
             <label for="">Email</label>
-            <input type="text" name="email" class="form-control">
+            <input type="email" name="email" class="form-control">
           </div>
           <div class="form-group">
             <label for="">Phone</label>
             <input type="number" name="phone" class="form-control">
           </div>
+          <div class="form-group">
+            <label for="">Password</label>
+            <input type="password" name="password" class="form-control">
+          </div>
+          <div class="form-group">
+            <label for="">image</label>
+            <input type="file" name="image" class="form-control">
+          </div>
 
-          <button class="btn btn-info">Submit</button>
+          <button type="submit" class="btn btn-info">Submit</button>
         </form>
         
       </div>

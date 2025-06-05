@@ -28,12 +28,23 @@
   <!-- /.login-logo -->
   <div class="card">
    
+   
     <% if(msg.length> 0){ %>
       <div class="alert alert-danger">
           <!-- To print -->
           <%= msg %>
       </div>
       <% } %>
+
+      <% if(success.length> 0){ %>
+        <div class="alert alert-success">
+            <!-- To print -->
+            <%= success %>
+        </div>
+        <% } %>
+
+
+     
     <div class="card-body login-card-body">
       <p class="login-box-msg">Sign in to start your session</p>
 

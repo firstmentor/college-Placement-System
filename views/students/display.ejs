@@ -37,6 +37,18 @@
           >
             Add Student
           </button>
+          <br>
+          <% if(error.length> 0){ %>
+          <div class="alert alert-danger">
+            <!-- To print -->
+            <%= error %>
+          </div>
+          <% } %> <% if(success.length> 0){ %>
+          <div class="alert alert-success">
+            <!-- To print -->
+            <%= success %>
+          </div>
+          <% } %>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -44,35 +56,46 @@
             <thead>
               <tr>
                 <th>S.No</th>
+                <th>RollNo</th>
                 <th>Name</th>
-                <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>Branch</th>
+                <th>Image</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>ram</td>
-                <td>ram@gmail.com</td>
-                <td>38786674</td>
-                <td>Btech</td>
-                <td>
-                  <a href="" class="btn btn-info">View</a>
-                  <a href="" class="btn btn-success">Edit</a>
-                  <a href="" class="btn btn-danger">Delete</a>
-                </td>
-              </tr>
+
+              <% std.forEach((item,index)=>{ %>
+                
+                <tr>
+                  <td><%= index+1 %></td>
+                  <td><%= item.rollNumber %></td>
+                  <td><%= item.name %></td>
+                  <td><%= item.phone %></td>
+                  <td><%= item.branch %></td>
+                  <td><img src="<%= item.image.url %>" alt="" width="100"></td>
+                  <td>
+                    <a href="/studentView/<%= item._id %>" class="btn btn-info">View</a>
+                    <a href="/studentEdit/<%= item._id %>" class="btn btn-success">Edit</a>
+                    <a href="/studentDelete/<%= item._id %>" class="btn btn-danger">Delete</a>
+                  </td>
+                </tr>
+                
+              <% }) %>
+              
+
+
             </tbody>
 
             <tfoot>
               <tr>
                 <th>S.No</th>
+                <th>RollNo</th>
                 <th>Name</th>
-                <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>Branch</th>
+                <th>Image</th>
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -96,6 +119,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h4 class="modal-title">Add Student</h4>
+
         <button
           type="button"
           class="close"
@@ -106,23 +130,74 @@
         </button>
       </div>
       <div class="modal-body">
-        <form action="">
+        <form action="/student/insert" method="post" enctype="multipart/form-data">
           <div class="form-group">
-            <label for="">Name</label>
-            <input type="text" name="name" class="form-control">
+            <label for="">RollNo</label>
+            <input
+              type="text"
+              name="rollNumber"
+              class="form-control"
+              required
+            />
           </div>
           <div class="form-group">
+            <label for="">Name</label>
+            <input type="text" name="name" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="">Address</label>
+            <textarea name="address" class="form-control" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="">Gender</label>
+            <select name="gender" id="" class="form-control" required>
+              <option value="">Select Gender</option>
+              <option value="male">Male</option>
+              <option value="female">FeMale</option>
+            </select>
+          </div>
+
+          <div class="form-group">
             <label for="">Email</label>
-            <input type="text" name="email" class="form-control">
+            <input type="email" name="email" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="">dob</label>
+            <input type="date" name="dob" class="form-control" required />
           </div>
           <div class="form-group">
             <label for="">Phone</label>
-            <input type="number" name="phone" class="form-control">
+            <input type="number" name="phone" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="">Branch</label>
+            <input type="text" name="branch" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="">Semester</label>
+            <input type="text" name="semester" class="form-control" required />
+          </div>
+          <div class="form-group">
+            <label for="">Password</label>
+            <input
+              type="password"
+              name="password"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="">Image</label>
+            <input
+              type="file"
+              name="image"
+              class="form-control"
+              required
+            />
           </div>
 
-          <button class="btn btn-info">Submit</button>
+          <button type="submit" class="btn btn-info">Submit</button>
         </form>
-        
       </div>
     </div>
     <!-- /.modal-content -->

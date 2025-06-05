@@ -38,6 +38,18 @@
           >
             Add HOD
           </button>
+
+          <% if(error.length> 0){ %>
+            <div class="alert alert-danger">
+              <!-- To print -->
+              <%= error %>
+            </div>
+            <% } %> <% if(success.length> 0){ %>
+            <div class="alert alert-success">
+              <!-- To print -->
+              <%= success %>
+            </div>
+            <% } %>
         </div>
         <!-- /.card-header -->
         <div class="card-body">
@@ -45,35 +57,38 @@
             <thead>
               <tr>
                 <th>S.No</th>
-                <th>Name</th>
+                <th>HOD Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>Image</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>1</td>
-                <td>ram</td>
-                <td>ram@gmail.com</td>
-                <td>38786674</td>
-                <td>Btech</td>
-                <td>
-                  <a href="" class="btn btn-info">View</a>
-                  <a href="" class="btn btn-success">Edit</a>
-                  <a href="" class="btn btn-danger">Delete</a>
-                </td>
-              </tr>
+              <% hod.forEach((item,index)=>{ %>
+                <tr>
+                  <td><%= index+1 %></td>
+                  <td><%= item.name  %></td>
+                  <td><%= item.email %></td>
+                  <td><%= item.phone %></td>
+                  <td><img src="<%= item.image.url %>" width="100"></td>
+                  <td>
+                    <a href="/hodView/<%= item._id %>" class="btn btn-info">View</a>
+                    <a href="/hodEdit/<%= item._id %>" class="btn btn-success">Edit</a>
+                    <a href="/hodDelete/<%= item._id %>" class="btn btn-danger">Delete</a>
+                  </td>
+                </tr>
+
+             <% }) %>
             </tbody>
 
             <tfoot>
               <tr>
                 <th>S.No</th>
-                <th>Name</th>
+                <th>HOD Name</th>
                 <th>Email</th>
                 <th>Phone</th>
-                <th>Course</th>
+                <th>Image</th>
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -96,7 +111,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Add Student</h4>
+        <h4 class="modal-title">Add HOD</h4>
         <button
           type="button"
           class="close"
@@ -106,22 +121,53 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">
-        <form action="">
+      <div class="modal-body">insert
+        <form action="/inserthod" method="post" enctype="multipart/form-data">
           <div class="form-group">
-            <label for="">Name</label>
-            <input type="text" name="name" class="form-control">
+            <label for="">HOD Name</label>
+            <input type="text" name="name" class="form-control" required>
+          </div>
+          <div class="form-group">image
+            <label for="">Address</label>
+            <textarea name="address" id="" class="form-control" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="">Gender</label>
+            <select name="gender" id="" class="form-control" required>
+              <option value="">Selete gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>  
+          <div class="form-group">
+            <label for="">Department</label>
+            <select name="department" id="" class="form-control" required>
+              <option value="">Selete Department</option>
+              <option value="it">IT</option>
+              <option value="cs">CS</option>
+              <option value="ec">EC</option>
+            </select>
           </div>
           <div class="form-group">
             <label for="">Email</label>
-            <input type="text" name="email" class="form-control">
+            <input type="text" name="email" class="form-control" required>
           </div>
           <div class="form-group">
             <label for="">Phone</label>
-            <input type="number" name="phone" class="form-control">
+            <input type="number" name="phone" class="form-control" required>
           </div>
 
-          <button class="btn btn-info">Submit</button>
+          <div class="form-group">
+            <label for="">Password</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+
+          <div class="form-group">
+            <label for="">Image</label>
+            <input type="file" name="image" class="form-control" required>
+          </div>
+          
+          <button type="submit" class="btn btn-info">Submit</button>
         </form>
         
       </div>
