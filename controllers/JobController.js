@@ -1,4 +1,11 @@
 const JobModel = require("../models/job");
+const sendEmail = require('../utils/sendMail');
+const StudentModel = require('../models/student');
+const CompanyModel = require('../models/compnay');
+const ApplicationModel = require('../models/ApplicationModel')
+
+
+
 
 class JobControlelr {
   static AllJobs = async (req, res) => {
@@ -15,7 +22,6 @@ class JobControlelr {
 
   static AddJob = async (req, res) => {
     try {
-      // console.log(req.body)
       const {
         title,
         description,
@@ -29,9 +35,14 @@ class JobControlelr {
         minCGPA,
         maxBacklogs,
         allowedBranches,
-        skillsRequired,
+        skillsRequired
       } = req.body;
-
+  
+      // ✅ Find company name from logged-in user
+      const companyData = await CompanyModel.findById(req.user.id);
+      const companyName = companyData?.name || "A Company"; // fallback
+  
+      // ✅ Save job
       const newJob = new JobModel({
         title,
         description,
@@ -40,26 +51,53 @@ class JobControlelr {
         department,
         jobType,
         applicationDeadline,
-        companyId: req.user.id, // company user id
+        companyId: req.user.id,
         requirements: {
           min10Percent,
           min12Percent,
           minCGPA,
           maxBacklogs,
-          allowedBranches: allowedBranches?.split(",").map((b) => b.trim()),
-          skillsRequired: skillsRequired?.split(",").map((s) => s.trim()),
-          // ये code उस string को array में बदल देता है और spaces साफ करता है ताकि database में clean data जाए।
-        },
+          allowedBranches: allowedBranches?.split(',').map(b => b.trim()),
+          skillsRequired: skillsRequired?.split(',').map(s => s.trim())
+        }
       });
-
+  
       await newJob.save();
-      res.redirect("/company/jobs"); // redirect to posted jobs page
+  
+      // ✅ Get all students
+      const students = await StudentModel.find({}, "email name");
+  
+      // ✅ Prepare and send emails
+      const emailPromises = students.map(student => {
+        const html = `
+          <p>Dear ${student.name},</p>
+          <p>A new job opportunity has been posted by <strong>${companyName}</strong> on Jiwaji University Training & Placement Cell:</p>
+          <ul>
+            <li><strong>Title:</strong> ${title}</li>
+            <li><strong>Location:</strong> ${location}</li>
+            <li><strong>Salary:</strong> ${salary}</li>
+            <li><strong>Deadline:</strong> ${applicationDeadline}</li>
+          </ul>
+         
+          <p>Thanks,<br>Jiwaji University <br>Training & Placement Cell</p>
+        `;
+  
+        return sendEmail(student.email, `New Job by ${companyName}: ${title}`, html);
+      });
+  
+      await Promise.all(emailPromises);
+  
+      req.flash("success", "Job posted and notifications sent to students.");
+      res.redirect('/company/jobs');
     } catch (error) {
       console.log(error);
+      req.flash("error", "Job post failed.");
+      res.redirect('/company/jobs');
     }
   };
 
   static updateJob = async (req, res) => {
+    console.log(req.body)
     try {
       const {
         title,
@@ -105,73 +143,102 @@ class JobControlelr {
   static deleteJob = async (req, res) => {
     try {
       const jobId = req.params.id;
+  
+      // Optionally: Check if this job belongs to logged-in company
+      const job = await JobModel.findOne({ _id: jobId, companyId: req.user.id });
+      if (!job) {
+        req.flash("error", "Job not found or unauthorized");
+        return res.redirect('/company/jobs');
+      }
+  
       await JobModel.findByIdAndDelete(jobId);
-      // Redirect back to jobs listing page after delete
-      req.flash("success", "Job delete successfully");
-
-      res.redirect("/company/jobs");
+  
+      req.flash("success", "Job deleted successfully");
+      res.redirect('/company/jobs');
     } catch (error) {
       console.log(error);
+      req.flash("error", "Something went wrong");
+      res.redirect('/company/jobs');
     }
   };
+  
 
 
   // Student ke liye saari available jobs dikhana
   static showJobsForStudent = async (req, res) => {
     try {
-      // Yahan simple sa filter laga sakte ho, jaise status open
-      const jobs = await JobModel.find({ status: 'open' }).populate('companyId', 'name').sort({ createdAt: -1 });
-      res.render('students/jobsList', { jobs, studentId: req.user.id,success:req.flash('success'),error:req.flash('error') });
+      const jobs = await JobModel.find({ status: 'open' })
+        .populate('companyId', 'name')
+        .sort({ createdAt: -1 });
+  
+      const student = await StudentModel.findById(req.user.id);
+  
+      res.render('students/jobsList', {
+        jobs,
+        studentId: req.user.id,
+        student,
+        success: req.flash('success'),
+        error: req.flash('error')
+      });
     } catch (error) {
       console.log(error);
-     
     }
   };
-
+  
+  
   // Student job apply karega
   static applyJob = async (req, res) => {
     try {
-      const jobId = req.params.id;
-      const studentId = req.user.id;
+      const student = await StudentModel.findById(req.user.id);
   
-      // 1. Find the job
-      const job = await JobModel.findById(jobId);
-      cosnole.log(job)
-      // if (!job) return res.status(404).render('error', { message: 'Job not found' });
-  
-      // 2. Check if already applied
-      const alreadyApplied = job.applicants.some(
-        app => app.student.toString() === studentId
-      );
-      if (alreadyApplied) {
-        return res.render("student/jobList", {
-          jobs: await JobModel.find().populate("companyId").sort({ createdAt: -1 }),
-          user: req.user,
-          error: "You have already applied for this job.",
-          success: ""
-        });
+      // Check if profile is complete
+      if (
+        !student.Xyear ||
+        !student.Xmarks ||
+       
+        !student.XIIyear ||
+        !student.XIImarks||
+        !student.GraYear ||
+        !student.GraCGPA ||
+        !student.resume
+       
+
+        
+      ) {
+        req.flash('error', 'Please complete your profile and upload resume before applying.');
+        return res.redirect('/uddateinfoStudent');
       }
   
-      // 3. Apply the job
-      job.applicants.push({
-        student: studentId,
-        status: 'applied',
-        appliedDate: new Date()
+      // Check if already applied (optional)
+      const alreadyApplied = await ApplicationModel.findOne({
+        jobId: req.params.jobId,
+        studentId: req.user.id
       });
-      await job.save();
   
-      return res.render("student/jobList", {
-        jobs: await JobModel.find().populate("companyId").sort({ createdAt: -1 }),
-        user: req.user,
-        success: "Applied successfully!",
-        error: ""
+      if (alreadyApplied) {
+        req.flash('error', 'You have already applied to this job.');
+        return res.redirect('/student/jobs');
+      }
+  
+      // Save application
+      const application = new ApplicationModel({
+        jobId: req.params.jobId,
+        studentId: req.user.id,
+        status: 'Applied',
       });
+  
+      await application.save();
+  
+      req.flash('success', 'Applied successfully!');
+      res.redirect('/student/my-applications');
     } catch (error) {
       console.log(error);
-      return res.status(500).render('error', { message: 'Server Error' });
+      req.flash('error', 'Something went wrong');
+      res.redirect('/student/jobs');
     }
   };
-  
+
+ 
 
 
   static SelectedStudent = async (req, res) => {
@@ -181,5 +248,8 @@ class JobControlelr {
       console.log(error);
     }
   };
+
+  
+  
 }
 module.exports = JobControlelr;

@@ -1,37 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
+    <title>Jiwaji University Gwalior</title>
+
     <!-- CSS Link -->
     <link rel="stylesheet" href="/main.css" />
 
-    <!-- Bootstrap Link -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
-</head>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+      crossorigin="anonymous"
+    />
 
-<body class="bg-black">
-        <!-- banner starts -->
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
+      .video-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        min-height: 100%;
+        object-fit: cover;
+        z-index: -1;
+        /* Removed blur and scale */
+      }
+
+      .banner {
+        position: relative;
+        z-index: 1;
+        color: white;
+        text-align: center;
+        padding-top: 100px;
+      }
+
+      .text button,
+      .text a.btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+      }
+
+      .text button:hover,
+      .text a.btn:hover {
+        background-color: #0056b3;
+      }
+
+      .text h6 {
+        background: black;
+        margin: auto;
+        width: 40%;
+      }
+
+      .text h5 {
+        background: linear-gradient(to right, black, yellow);
+        margin: auto;
+        width: 67%;
+      }
+
+      .text a.btn {
+        width: 10%;
+      }
+
+      .logo {
+        width: 400px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 768px) {
+        .text h6,
+        .text h5 {
+          width: 90%;
+          font-size: 16px;
+        }
+
+        .text a.btn {
+          width: 50%;
+          font-size: 16px;
+        }
+
+        .logo {
+          width: 80%;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .text a.btn {
+          width: 70%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Background Video -->
+    <video class="video-background" autoplay muted loop playsinline>
+      <source
+        src="https://jiwaji.edu/wp-content/uploads/2023/07/jiwaji1.mp4"
+        type="video/mp4"
+      />
+      Your browser does not support the video tag.
+    </video>
+
+    <!-- Banner Content -->
     <div class="banner">
-        <div class="text">
-            <center>
-                <h6>Welcome to Providence Placement System</h6>
-                <h5>Training & Placement Cell</h5>
-                <br>
-                <br>
-                <br>
-                <img class="logo" src="/images/log.png" alt="hiii" width ="200px">
-                <br>
-                <br>
-                <br>
-                <center><a href="/login"><button type="submit">Login</button></a></center>
-            </center>
-        </div>
+      <div class="text">
+        <img
+          class="logo bg-white"
+          src="/images/jiwaji-logo-updated.png-01.png-removebg-preview.png"
+          alt="Logo"
+        />
+        <h6>Welcome to Providence Placement System</h6>
+        <h5>Training & Placement Cell</h5>
+        <br /><br /><br /><br /><br />
+        <a href="/login" class="btn btn-dark text-white btn-lg">Login</a>
+      </div>
     </div>
-    <!-- banner ends -->
-</body>
-
+  </body>
 </html>

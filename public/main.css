@@ -1,4 +1,4 @@
-.banner {
+/* .banner {
     background-image: linear-gradient(
         to top,
         rgba(0, 0, 0, 0.7) 0,
@@ -11,7 +11,7 @@
   background-position: fixed;
   background-size: cover;
   background-repeat: no-repeat;
-}
+} */
 
 .banner h6 {
   color: rgb(255, 255, 255);
@@ -43,4 +43,52 @@
   background: rgb(16, 1, 72);
   color: rgb(255, 255, 255);  
   cursor: pointer;
+}
+
+.custom-sidebar {
+  background: linear-gradient(to bottom, #1e1e2f, #23243a);
+  color: #ffffff;
+}
+
+.custom-sidebar .brand-link {
+  background-color: #141422;
+  color: #ffffff;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: 1px solid #444;
+}
+
+.custom-sidebar .nav-sidebar .nav-link {
+  color: #c2c7d0;
+  transition: background-color 0.3s ease;
+}
+
+.custom-sidebar .nav-sidebar .nav-link.active,
+.custom-sidebar .nav-sidebar .nav-link:hover {
+  background-color: #3c3f58;
+  color: #ffffff;
+}
+
+.custom-sidebar .nav-icon {
+  color: #adb5bd;
+  margin-right: 5px;
+}
+
+.custom-sidebar .nav-icon:hover {
+  color: #ffffff;
+}
+
+.custom-sidebar .user-panel .info a {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.content-wrapper {
+  background: #1f1f2e !important;
+  color: #ffffff;
+  min-height: 100vh;
+  padding-bottom: 20px;
+}
+.breadcrumb-item > a {
+  color: #ccc !important;
 }

@@ -1,10 +1,12 @@
 const AdminModel = require("../models/admin");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const StudentModel = require('../models/student')
-const HodModel =require('../models/hod')
-const CompanyModel = require('../models/compnay')
-
+const StudentModel = require("../models/student");
+const HodModel = require("../models/hod");
+const CompanyModel = require("../models/compnay");
+const JobModel = require("../models/job");
+const SelectedStudent = require("../models/student");
+const ApplicationModel = require('../models/ApplicationModel')
 
 class FrontController {
   static home = async (req, res) => {
@@ -50,11 +52,52 @@ class FrontController {
 
   static dashboard = async (req, res) => {
     try {
-      res.render("dashboard", { role: req.user.role, name: req.user.name });
+      const role = req.user.role;
+      const name = req.user.name;
+  
+      let stats = {};
+  
+      if (role === 'admin') {
+        stats.totalStudents = await StudentModel.countDocuments();
+        stats.totalHods = await HodModel.countDocuments();
+        stats.totalCompanies = await CompanyModel.countDocuments();
+        stats.totalJobs = await JobModel.countDocuments();
+        stats.selectedStudents = await ApplicationModel.countDocuments({ status: 'Selected' }); // ✅ Add this
+
+      } else if (role === 'hod') {
+        const hod = await HodModel.findOne({ email: req.user.email });
+        const dept = hod.department;
+        // console.log(dept)
+        stats.deptStudents = await StudentModel.countDocuments({ branch: dept });
+        // console.log(stats.deptStudents)
+        stats.appliedStudents = await ApplicationModel.countDocuments({ branch: dept });
+        stats.selectedStudents = await ApplicationModel.countDocuments({ branch: dept, status: 'Selected' });
+      } else if (role === 'company') {
+        const companyId = req.user.id;
+        stats.jobsPosted = await JobModel.countDocuments({ companyId });
+        stats.totalApplications = await ApplicationModel.countDocuments({ companyId });
+        stats.hiredCount = await ApplicationModel.countDocuments({ companyId, status: 'Selected' });
+      } else if (role === 'student') {
+        stats.availableJobs = await JobModel.countDocuments();
+        stats.jobsApplied = await ApplicationModel.countDocuments({ studentId: req.user.id });
+        stats.interviews = await ApplicationModel.countDocuments({ studentId: req.user.id, status: 'Interview Scheduled' });
+      }
+  
+      res.render("dashboard", {
+        role,
+        name,
+        stats,
+      });
     } catch (error) {
       console.log(error);
+      req.flash("error", "Dashboard error");
+      res.redirect("/login");
     }
   };
+  
+  
+  
+  
 
   static registerAdmin = async (req, res) => {
     try {
@@ -103,16 +146,22 @@ class FrontController {
         req.flash("error", "User not registered");
         return res.redirect("/login");
       }
-      // console.log(user);
+
+      // ✅ Only check status for students
+      if (user.role === "student" && user.status !== "active") {
+        req.flash("error", "Your account is not active. Contact admin.");
+        return res.redirect("/login");
+      }
 
       const isMatch = await bcrypt.compare(password, user.password);
       if (!isMatch) {
         req.flash("error", "Email or Password not match");
         return res.redirect("/login");
       }
+      console.log(isMatch)
       // Generate JWT token
       const token = jwt.sign(
-        { id: user._id, role: role, name: user.name },
+        { id: user._id, role: role, name: user.name ,email:user.email},
         process.env.jwt_secret_key, // secret key — ise environment variable me rakhna best practice hai
         { expiresIn: "1d" }
       );
@@ -136,7 +185,6 @@ class FrontController {
       console.log(error);
     }
   };
- 
 
   static logout = async (req, res) => {
     try {

@@ -1,47 +1,74 @@
-<%- include('../layouts/navbar.ejs') %>
-<%- include('../layouts/sidebar.ejs') %>
+<%- include('../layouts/navbar.ejs') %> <%- include('../layouts/sidebar.ejs') %>
 
 <div class="content-wrapper">
   <div class="content-header">
     <h1 class="m-0">Available Jobs</h1>
   </div>
-
+  <!--content-header -->
   <div class="content">
     <div class="container-fluid">
-        <% if(success.length > 0) { %>
-            <div class="alert alert-success"><%= success %></div>
-          <% } %>
-          <% if(error.length > 0) { %>
-            <div class="alert alert-danger"><%= error %></div>
-          <% } %>
+      <% if(success.length > 0) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %> <% if(error.length > 0) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
       <div class="row">
         <% jobs.forEach((job, index) => { %>
-          <div class="col-md-4">
-            <div class="card mb-3 shadow">
-              <div class="card-header bg-primary text-white">
-                <h5><%= job.title %></h5>
-              </div>
-              <div class="card-body">
-                <p><strong>Company:</strong> <%= job.companyId?.name || "N/A" %></p>
-                <p><strong>Location:</strong> <%= job.location %></p>
-                <p><strong>Salary:</strong> <%= job.salary %></p>
-                <p><strong>Department:</strong> <%= job.department %></p>
-                <p><strong>Min 12th %:</strong> <%= job.requirements?.min12Percent || "-" %></p>
-                <p><strong>Min CGPA:</strong> <%= job.requirements?.minCGPA || "-" %></p>
-                <p><strong>Max Backlogs:</strong> <%= job.requirements?.maxBacklogs || "0" %></p>
-                <p><strong>Skills Required:</strong> <%= job.requirements?.skillsRequired?.join(", ") %></p>
+        <div class="col-md-4">
+          <div class="card mb-3 shadow">
+            <div class="card-header bg-primary text-white">
+              <h5><%= job.title %></h5>
+            </div>
+            <div class="card-body">
+              <p>
+                <strong>Company:</strong> <%= job.companyId?.name || "N/A" %>
+              </p>
+              <p><strong>Location:</strong> <%= job.location %></p>
+              <p><strong>Salary:</strong> <%= job.salary %></p>
+              <p><strong>Department:</strong> <%= job.department %></p>
+              <p>
+                <strong>Min 12th %:</strong> <%= job.requirements?.min12Percent
+                || "-" %>
+              </p>
+              <p>
+                <strong>Min CGPA:</strong> <%= job.requirements?.minCGPA || "-"
+                %>
+              </p>
+              <p>
+                <strong>Max Backlogs:</strong> <%= job.requirements?.maxBacklogs
+                || "0" %>
+              </p>
+              <p>
+                <strong>Skills Required:</strong> <%=
+                job.requirements?.skillsRequired?.join(", ") %>
+              </p>
 
-                <!-- Apply Button -->
-                <form action="/student/apply/<%= job._id %>" method="POST">
-                  <button class="btn btn-success btn-sm w-100">Apply</button>
-                </form>
-              </div>
+              <!-- Apply Button -->
+              <% const isComplete = student?.Xmarks && student?.XIImarks &&
+              student?.GraCGPA && student?.resume; %> <% if (isComplete) { %>
+              <form action="/student/apply/<%= job._id %>" method="POST">
+                <button class="btn btn-success btn-sm w-100">Apply</button>
+              </form>
+              <% } else { %>
+              <a
+                href="/uddateinfoStudent"
+                class="btn btn-warning btn-sm w-100"
+              >
+                Complete Profile to Apply
+              </a>
+              <% } %>
             </div>
           </div>
+        </div>
         <% }) %>
       </div>
+      <!--row end-->
     </div>
+    <!--container-fluid end-->
   </div>
+  <!--content end-->
 </div>
+<!--content-wrapper end-->
 
 <%- include('../layouts/footer.ejs') %>

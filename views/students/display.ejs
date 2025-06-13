@@ -1,5 +1,6 @@
 <%- include('../layouts/navbar.ejs') %> <%- include('../layouts/sidebar.ejs') %>
 
+
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
   <!-- Content Header (Page header) -->
@@ -61,45 +62,40 @@
                 <th>Phone</th>
                 <th>Branch</th>
                 <th>Image</th>
+                <th>Status</th>
                 <th>Action</th>
               </tr>
             </thead>
             <tbody>
-
-              <% std.forEach((item,index)=>{ %>
-                
+              <% std.forEach((item, index) => { %>
                 <tr>
-                  <td><%= index+1 %></td>
+                  <td><%= index + 1 %></td>
                   <td><%= item.rollNumber %></td>
                   <td><%= item.name %></td>
                   <td><%= item.phone %></td>
                   <td><%= item.branch %></td>
                   <td><img src="<%= item.image.url %>" alt="" width="100"></td>
                   <td>
+                    <form action="/student/status/<%= item._id %>" method="POST">
+                      <button type="submit" class="btn btn-sm <%= item.status === 'active' ? 'btn-success' : 'btn-warning' %>">
+                        <%= item.status === 'active' ? 'Active' : 'Inactive' %>
+                      </button>
+                    </form>
+                  </td>
+                  <td>
+                    <% if (role === 'admin' || role === 'hod') { %>
                     <a href="/studentView/<%= item._id %>" class="btn btn-info">View</a>
                     <a href="/studentEdit/<%= item._id %>" class="btn btn-success">Edit</a>
                     <a href="/studentDelete/<%= item._id %>" class="btn btn-danger">Delete</a>
+                    <% } %>
                   </td>
                 </tr>
-                
               <% }) %>
-              
-
-
             </tbody>
-
-            <tfoot>
-              <tr>
-                <th>S.No</th>
-                <th>RollNo</th>
-                <th>Name</th>
-                <th>Phone</th>
-                <th>Branch</th>
-                <th>Image</th>
-                <th>Action</th>
-              </tr>
-            </tfoot>
           </table>
+          
+          
+          
         </div>
         <!-- /.card-body -->
       </div>
@@ -205,5 +201,19 @@
   <!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
+<script>
+  $(document).ready(function () {
+    // Check if already initialized
+    if (!$.fn.DataTable.isDataTable('#example1')) {
+      $('#example1').DataTable({
+        dom: 'Bfrtip',
+        responsive: true,
+        buttons: ['excelHtml5', 'pdfHtml5']
+      });
+    }
+  });
+</script>
+ 
 
 <%- include('../layouts/footer.ejs') %>

@@ -22,11 +22,24 @@
     <div class="container-fluid">
       <div class="card">
         <div class="card-header">
-          <h3>Edit Student</h3>
+          <h3>Update Student Info</h3>
+          <% if(error.length> 0){ %>
+            <div class="alert alert-danger">
+                <!-- To print -->
+                <%= error %>
+            </div>
+            <% } %>
+      
+            <% if(success.length> 0){ %>
+              <div class="alert alert-success">
+                  <!-- To print -->
+                  <%= success %>
+              </div>
+              <% } %>
         </div>
         <div class="card-body">
           <form
-            action="/studentUpdate/<%= edit._id %>"
+            action="/studentUpdateInfo/<%= edit._id %>"
             method="post"
             enctype="multipart/form-data"
           >

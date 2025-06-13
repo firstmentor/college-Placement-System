@@ -1,6 +1,10 @@
 const StudentModel = require("../models/student");
 const bcrypt = require("bcrypt");
 const cloudinary = require("cloudinary");
+const sendMail = require("../Utility/sendMail");
+const HodModel = require("../models/hod");
+const path = require('path');
+const fs = require('fs');
 
 //setup
 cloudinary.config({
@@ -12,24 +16,47 @@ cloudinary.config({
 class StudentController {
   static display = async (req, res) => {
     try {
-      const student = await StudentModel.find();
-      // console.log(student)
+      const role = req.user.role;
+      const name = req.user.name;
+
+      let student = [];
+
+      if (role === "admin") {
+        // Admin: show all students
+        student = await StudentModel.find();
+      } else if (role === "hod") {
+        // HOD: find own department from HOD model
+        const email = req.user.email;
+        const hodData = await HodModel.findOne({ email });
+
+        if (hodData) {
+          const dept = hodData.department;
+          student = await StudentModel.find({ branch: dept });
+        } else {
+          req.flash("error", "HOD not found");
+          return res.redirect("/dashboard");
+        }
+      } else {
+        req.flash("error", "Unauthorized access");
+        return res.redirect("/dashboard");
+      }
+
       res.render("students/display", {
-        role: req.user.role,
-        name: req.user.name,
+        role,
+        name,
         error: req.flash("error"),
         success: req.flash("success"),
         std: student,
-      }); //folder(student) display.ejs
+      });
     } catch (error) {
       console.log(error);
+      req.flash("error", "Something went wrong");
+      return res.redirect("/dashboard");
     }
   };
 
-  static insertStudent = async (req, res) => {
+  static studentInsert = async (req, res) => {
     try {
-      // console.log(req.files)
-      // console.log(req.body)
       const {
         rollNumber,
         name,
@@ -40,28 +67,28 @@ class StudentController {
         phone,
         branch,
         semester,
-        password,
       } = req.body;
-      const existingStudent = await StudentModel.findOne({ email });
-      const existingRoll = await StudentModel.findOne({ rollNumber });
-      if (existingStudent) {
-        req.flash("error", "Email already registered");
-        return res.redirect("/student/display");
-      }
-      if (existingRoll) {
-        req.flash("error", "RollNumber already registered");
-        return res.redirect("/student/display");
-      }
-      //image uplaod
-      const file = req.files.image;
-      const imageUpload = await cloudinary.uploader.upload(file.tempFilePath, {
-        folder: "student_images",
-      });
-      // console.log(imageUpload)
 
-      const hashPassword = await bcrypt.hash(password, 10);
+      const password = "1234";
 
-      const result = await StudentModel.create({
+      const hashedPassword = await bcrypt.hash(password, 10); // if you use bcrypt
+
+      let imageData = {
+        public_id: "",
+        url: "",
+      };
+
+      if (req.files && req.files.image) {
+        const imagefile = req.files.image;
+        const imageupload = await cloudinary.uploader.upload(
+          imagefile.tempFilePath,
+          { folder: "userprofile" }
+        );
+        imageData.public_id = imageupload.public_id;
+        imageData.url = imageupload.secure_url;
+      }
+
+      const newStudent = new StudentModel({
         rollNumber,
         name,
         address,
@@ -71,16 +98,26 @@ class StudentController {
         phone,
         branch,
         semester,
-        password: hashPassword,
-        image: {
-          public_id: imageUpload.public_id,
-          url: imageUpload.secure_url,
-        },
+        password: hashedPassword,
+        image: imageData,
+        registeredBy: req.user.role, // admin or hod
       });
-      req.flash("success", "Student registered successfully!");
-      return res.redirect("/student/display");
-    } catch (error) {
-      console.log(error);
+
+      await newStudent.save();
+
+      // Send email
+      await sendMail(
+        email,
+        "Welcome to Jiwaji University Gwalior",
+        `Dear ${name},\n\nYour account has been created.\n\nLogin Email: ${email}\nPassword: 1234\n\nThank you!`
+      );
+
+      req.flash("success", "Student registered successfully and email sent.");
+      res.redirect("/student/display");
+    } catch (err) {
+      console.log(err);
+      req.flash("error", "Failed to register student.");
+      res.redirect("/student/display");
     }
   };
 
@@ -135,7 +172,7 @@ class StudentController {
         semester,
         password,
       } = req.body;
-      
+
       if (req.files) {
         const student = await StudentModel.findById(id);
         const imageID = student.image.public_id;
@@ -151,7 +188,7 @@ class StudentController {
             folder: "userprofile",
           }
         );
-       
+
         var data = {
           rollNumber,
           name,
@@ -191,15 +228,84 @@ class StudentController {
   //updatinfo
   static uddateinfoStudent = async (req, res) => {
     const student = await StudentModel.findById(req.user.id);
-    console.log(student)
+    // console.log(student)
 
     try {
-
-      res.render('students/updateinfo',{edit:student})
+      res.render("students/updateinfo", {
+        edit: student,
+        error: req.flash("error"),
+        success: req.flash("succes"),
+      });
     } catch (error) {
       console.log(error);
     }
   };
 
+  static studentUpdateinfo = async (req, res) => {
+    try {
+      console.log(req.body)
+      const studentId = req.params.id;
+      const {
+        Xyear,
+        Xmarks,
+        XIIyear,
+        XIImarks,
+        GraYear,
+        GraCGPA,
+      } = req.body;
+  
+      const student = await StudentModel.findById(studentId);
+  
+      if (!student) {
+        req.flash('error', 'Student not found');
+        return res.redirect('back');
+      }
+  
+      // Resume Upload Handling
+      let resumePath = student.resume; // Keep old if not updated
+      if (req.file) {
+        // Delete old resume if exists
+        if (student.resume) {
+          const oldPath = path.join(__dirname, '..', 'public', 'uploads', student.resume);
+          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        }
+        resumePath = req.file.filename; // New uploaded file name
+      }
+  
+      await StudentModel.findByIdAndUpdate(studentId, {
+        Xyear,
+        Xmarks,
+        XIIyear,
+        XIImarks,
+        GraYear,
+        GraCGPA,
+        resume: resumePath,
+      });
+  
+      req.flash('success', 'Student info updated successfully');
+      res.redirect('/student/profile'); // Or wherever appropriate
+  
+    } catch (error) {
+      console.log(error);
+      req.flash('error', 'Something went wrong');
+      res.redirect('back');
+    }
+  };
+  
+
+  static toggleStatus = async (req, res) => {
+    try {
+      const student = await StudentModel.findById(req.params.id);
+      const newStatus = student.status === "active" ? "inactive" : "active";
+      await StudentModel.findByIdAndUpdate(req.params.id, {
+        status: newStatus,
+      });
+      req.flash("success", `Student status changed to ${newStatus}`);
+      res.redirect("/student/display");
+    } catch (error) {
+      console.log(error);
+      res.redirect("/student/display");
+    }
+  };
 }
 module.exports = StudentController;

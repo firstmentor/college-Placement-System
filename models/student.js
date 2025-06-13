@@ -101,6 +101,15 @@
     createdAt: {
       type: Date,
       default: Date.now,
+    },
+    registeredBy: {
+      type: String, // can be 'admin' or 'hod'
+      required: true
+    },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active'
     }
 
   });

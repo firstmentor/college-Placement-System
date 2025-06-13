@@ -1,46 +1,244 @@
-<%- include('./layouts/navbar.ejs') %>
-<%- include('./layouts/sidebar.ejs') %>
+<%- include('./layouts/navbar.ejs') %> <%- include('./layouts/sidebar.ejs') %>
 
- 
-
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-            <h1 class="m-0 text-dark">Starter Page</h1>
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active">Starter Page</li>
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
-
-    <!-- Main content -->
-    <div class="content">
-      <div class="container-fluid">
-        <div class="row">
-         
-          
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">Dashboard</h1>
         </div>
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Dashboard</li>
+          </ol>
+        </div>
+      </div>
     </div>
-    <!-- /.content -->
   </div>
-  <!-- /.content-wrapper -->
 
- 
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <% if (role === 'admin') { %>
+        <!-- Total Students -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3><%= stats.totalStudents %></h3>
+              <p>Total Students</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-person-stalker"></i>
+            </div>
+            <a href="/students/display" class="small-box-footer"
+              >More info <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
 
+        <!-- Total HODs -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><%= stats.totalHods %></h3>
+              <p>Total HODs</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-university"></i>
+            </div>
+            <a href="/hod/display" class="small-box-footer"
+              >More info <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
 
-  <%- include('./layouts/footer.ejs') %>
+        <!-- Total Companies -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3><%= stats.totalCompanies %></h3>
+              <p>Total Companies</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-briefcase"></i>
+            </div>
+            <a href="/company/display" class="small-box-footer"
+              >More info <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
 
+        <!-- Total Jobs -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-danger">
+            <div class="inner">
+              <h3><%= stats.totalJobs %></h3>
+              <p>Total Jobs Posted</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-ios-briefcase-outline"></i>
+            </div>
+            <a href="/job/display" class="small-box-footer"
+              >More info <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
 
-  
+        <!-- Selected Students -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-primary">
+            <div class="inner">
+              <h3><%= stats.selectedStudents %></h3>
+              <p>Selected Students</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-checkmark-circled"></i>
+            </div>
+            <a href="/applications/selected" class="small-box-footer"
+              >View All <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <% } else if (role === 'hod') { %>
+        <!-- Total Students in Department -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3><%= stats.deptStudents %></h3>
+              <p>Students in Department</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-person-stalker"></i>
+            </div>
+            <a href="/student/display" class="small-box-footer"
+              >View Students <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- Selected Students in Department -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><%= stats.selectedInDept %></h3>
+              <p>Selected Students</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-checkmark-circled"></i>
+            </div>
+            <a href="/applications/selected" class="small-box-footer"
+              >View Selected <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <% } else if (role === 'student') { %>
+        <!-- Jobs Applied -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3><%= stats.appliedJobs %></h3>
+              <p>Jobs Applied</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-briefcase"></i>
+            </div>
+            <a href="/applications/my" class="small-box-footer"
+              >View My Applications <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- Application Status -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3><%= stats.statusPending %></h3>
+              <p>Pending Applications</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-clock"></i>
+            </div>
+            <a href="/applications/my" class="small-box-footer"
+              >Check Status <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- Selection -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><%= stats.statusSelected %></h3>
+              <p>Selected</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-checkmark-circled"></i>
+            </div>
+            <a href="/applications/my" class="small-box-footer"
+              >View Details <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <% } else if (role === 'company') { %>
+        <!-- Jobs Posted by Company -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-info">
+            <div class="inner">
+              <h3><%= stats.jobsPosted %></h3>
+              <p>Jobs Posted</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-ios-briefcase-outline"></i>
+            </div>
+            <a href="/job/display" class="small-box-footer"
+              >Manage Jobs <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- Applications Received -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-warning">
+            <div class="inner">
+              <h3><%= stats.totalApplications %></h3>
+              <p>Applications Received</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-person-add"></i>
+            </div>
+            <a href="/applications/display" class="small-box-footer"
+              >View Applications <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <!-- Selected Students -->
+        <div class="col-lg-3 col-6">
+          <div class="small-box bg-success">
+            <div class="inner">
+              <h3><%= stats.selectedStudents %></h3>
+              <p>Students Selected</p>
+            </div>
+            <div class="icon">
+              <i class="ion ion-checkmark-circled"></i>
+            </div>
+            <a href="/applications/selected" class="small-box-footer"
+              >View Selected <i class="fas fa-arrow-circle-right"></i
+            ></a>
+          </div>
+        </div>
+
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('./layouts/footer.ejs') %>

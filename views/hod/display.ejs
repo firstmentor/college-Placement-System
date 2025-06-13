@@ -60,6 +60,7 @@
                 <th>HOD Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Department</th>
                 <th>Image</th>
                 <th>Action</th>
               </tr>
@@ -71,6 +72,8 @@
                   <td><%= item.name  %></td>
                   <td><%= item.email %></td>
                   <td><%= item.phone %></td>
+                  <td><%= item.department %></td>
+
                   <td><img src="<%= item.image.url %>" width="100"></td>
                   <td>
                     <a href="/hodView/<%= item._id %>" class="btn btn-info">View</a>
@@ -88,7 +91,9 @@
                 <th>HOD Name</th>
                 <th>Email</th>
                 <th>Phone</th>
+                <th>Department</th>
                 <th>Image</th>
+               
                 <th>Action</th>
               </tr>
             </tfoot>
@@ -121,13 +126,13 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div class="modal-body">insert
+      <div class="modal-body">
         <form action="/inserthod" method="post" enctype="multipart/form-data">
           <div class="form-group">
             <label for="">HOD Name</label>
             <input type="text" name="name" class="form-control" required>
           </div>
-          <div class="form-group">image
+          <div class="form-group">
             <label for="">Address</label>
             <textarea name="address" id="" class="form-control" required></textarea>
           </div>
@@ -143,9 +148,13 @@
             <label for="">Department</label>
             <select name="department" id="" class="form-control" required>
               <option value="">Selete Department</option>
-              <option value="it">IT</option>
-              <option value="cs">CS</option>
-              <option value="ec">EC</option>
+              <option value="IT">IT</option>
+              <option value="CSE">CSE</option>
+              <option value="EC">EC</option>
+              <option value="AI">AI</option>
+              <option value="ML">ML</option>
+              <option value="MCA">MCA</option>
+              <option value="MBA">MBA</option>
             </select>
           </div>
           <div class="form-group">

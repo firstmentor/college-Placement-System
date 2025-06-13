@@ -89,7 +89,7 @@
 
                   <!-- Delete Form -->
                   <form
-                    action="/company/jobs/delete/<%= job._id %>"
+                    action="/compnay/job/delete/<%= job._id %>"
                     method="POST"
                     style="display: inline"
                   >
@@ -115,7 +115,7 @@
                       </button>
                     </div>
                     <div class="modal-body">
-                      <p><strong>Designation:</strong> <%= job.title %></p>
+                      <p><strong>Title:</strong> <%= job.title %></p>
                       <p><strong>Description:</strong> <%= job.description %></p>
                       <p><strong>Salary:</strong> <%= job.salary || 'N/A' %></p>
                       <p><strong>Location:</strong> <%= job.location || 'N/A' %></p>
