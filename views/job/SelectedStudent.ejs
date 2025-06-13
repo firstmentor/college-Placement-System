@@ -28,49 +28,28 @@
   <!-- Main content -->
   <div class="content">
     <div class="container-fluid">
-      <div class="card">
-        <div class="card-header">
-         
-          
+      <div class="content p-3">
+        <div class="row">
+          <% applications.forEach(app => { %>
+            <div class="col-md-4">
+              <div class="card shadow mb-4">
+                <img src="<%= app.studentId.image?.url || '/default.png' %>" class="card-img-top" alt="Student Photo" style="height: 300px; object-fit: cover;" />
+                <div class="card-body">
+                  
+                  <br>
+                  <p><strong>Name:</strong> <%= app.studentId.name %></p>
+                  <p><strong>Email:</strong> <%= app.studentId.email %></p>
+                  <p><strong>Branch:</strong> <%= app.studentId.branch %></p>
+                  <p><strong>Company:</strong> <%= app.jobId.companyId?.name %></p>
+                  <p><strong>Job:</strong> <%= app.jobId.title %></p>
+                
+                  <a href="<%= app.studentId.resume?.url %>" class="btn btn-sm btn-primary" target="_blank">View Resume</a>
+                </div>
+              </div>
+            </div>
+          <% }) %>
         </div>
-        <!-- /.card-header -->
-        <div class="card-body">
-          <table id="example1" class="table table-bordered table-striped">
-            <thead>
-              <tr>
-                <th>S.No</th>
-                <th>Student Name</th>
-                <th>Branch</th>
-                <th>Designation</th>
-                <th>Salary Package</th>
-                <th>Image</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              
-            </tbody>
-            <tfoot>
-              <tr>
-                <th>S.No</th>
-                <th>Student Name</th>
-                <th>Branch</th>
-                <th>Designation</th>
-                <th>Salary Package</th>
-                <th>Image</th>
-                <th>Action</th>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-        <!-- /.card-body -->
       </div>
-      <!-- /.card -->
-
-      <!-- /.row -->
-    </div>
-    <!-- /.container-fluid -->
   </div>
   <!-- /.content -->
 </div>

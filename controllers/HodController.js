@@ -3,6 +3,8 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 const StudentModel = require('../models/student')
 const { cloudinary } = require("../config/cloudinary");
+const ApplicationModel = require('../models/ApplicationModel');
+
 
 
 
@@ -225,6 +227,8 @@ class HodController {
       return res.redirect("/hod/display");
     }
   };
+
+ 
   
   
 }

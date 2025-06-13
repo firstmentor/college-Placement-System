@@ -320,11 +320,30 @@ class JobControlelr {
 
   static SelectedStudent = async (req, res) => {
     try {
-      res.render("job/SelectedStudent"); //folder(student) display.ejs
+      const selectedApplications = await ApplicationModel.find({ status: 'Selected' })
+        .populate({
+          path: 'studentId',
+          select: 'name email image resume branch', // adjust fields as needed
+        })
+        .populate({
+          path: 'jobId',
+          model: "Job", 
+          populate: {
+            path: 'companyId',
+            select: 'name'
+          }
+        });
+  
+      res.render('job/SelectedStudent', {
+        applications: selectedApplications,
+      });
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      
     }
   };
+
+ 
 
   
   
