@@ -1,70 +1,48 @@
 const express = require('express')
-const app =express()
-const web =require('./routes/web')
-const connectDb =require('./database/dbcon')
+const app = express()
+const web = require('./routes/web')
+const connectDb = require('./database/dbcon')
 const flash = require('connect-flash');
 const session = require('express-session')
 const setUserInfo = require('./middlewares/setUserInfo');
-const fileUpload =require('express-fileupload')
-
+const cookieParser = require('cookie-parser')
 require('dotenv').config()
 
+// ❌ REMOVE THIS
+// const fileUpload = require('express-fileupload')
+// app.use(fileUpload({ useTempFiles: true }));
 
+// ✅ Use only multer (from your /config/upload.js)
 
-//image upload form se controller ke pass jati hai
-app.use(fileUpload({
-    useTempFiles : true,
-   
-}));
-
-const cookieParser = require('cookie-parser')
-//token get cookies
-
+// Middleware for cookies
 app.use(cookieParser())
 app.use(setUserInfo);
 
-
-
-// messages
+// Session + flash
 app.use(session({
     secret: 'secret',
-    cookie: {maxAge: 60000},
+    cookie: { maxAge: 60000 },
     resave: false,
     saveUninitialized: false,
 }));
-// Flash messages
 app.use(flash())
 
-
-
-
-
-
-
-//connectdb
+// Connect DB
 connectDb()
-//view ejs
+
+// View engine
 app.set('view engine', 'ejs')
-//css image js link
+
+// Static folder
 app.use(express.static('public'))
 
-//data get parse application/x-www-form-urlencoded
-app.use(express.urlencoded())
+// Required for form parsing
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // ✅
 
+app.use('/', web)
 
-
-
-
-
-
-
-//route load
-app.use('/',web)
-
-//server start
-app.listen(process.env.PORT,()=>{
+// Server
+app.listen(process.env.PORT, () => {
     console.log(`server start localhost:${process.env.PORT}`)
 })
-
-
-

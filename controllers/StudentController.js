@@ -1,17 +1,17 @@
 const StudentModel = require("../models/student");
 const bcrypt = require("bcrypt");
-const cloudinary = require("cloudinary");
 const sendMail = require("../Utility/sendMail");
 const HodModel = require("../models/hod");
 const path = require('path');
 const fs = require('fs');
+const streamifier = require('streamifier');
+const { cloudinary } = require("../config/cloudinary");
+const ApplicationModel =require('../models/ApplicationModel')
+const job = require('../models/job')
 
-//setup
-cloudinary.config({
-  cloud_name: "dlgrvoo5l",
-  api_key: "327727556398188",
-  api_secret: "P3f1N_HOoWuv6gwKP_FsAGsirck",
-});
+
+
+
 
 class StudentController {
   static display = async (req, res) => {
@@ -70,22 +70,16 @@ class StudentController {
       } = req.body;
 
       const password = "1234";
-
-      const hashedPassword = await bcrypt.hash(password, 10); // if you use bcrypt
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       let imageData = {
         public_id: "",
         url: "",
       };
 
-      if (req.files && req.files.image) {
-        const imagefile = req.files.image;
-        const imageupload = await cloudinary.uploader.upload(
-          imagefile.tempFilePath,
-          { folder: "userprofile" }
-        );
-        imageData.public_id = imageupload.public_id;
-        imageData.url = imageupload.secure_url;
+      if (req.file) {
+        imageData.public_id = req.file.filename;
+        imageData.url = req.file.path;
       }
 
       const newStudent = new StudentModel({
@@ -100,12 +94,11 @@ class StudentController {
         semester,
         password: hashedPassword,
         image: imageData,
-        registeredBy: req.user.role, // admin or hod
+        registeredBy: req.user.role,
       });
 
       await newStudent.save();
 
-      // Send email
       await sendMail(
         email,
         "Welcome to Jiwaji University Gwalior",
@@ -114,6 +107,7 @@ class StudentController {
 
       req.flash("success", "Student registered successfully and email sent.");
       res.redirect("/student/display");
+
     } catch (err) {
       console.log(err);
       req.flash("error", "Failed to register student.");
@@ -121,17 +115,34 @@ class StudentController {
     }
   };
 
+
   static studentDelete = async (req, res) => {
     try {
       const id = req.params.id;
-      // console.log(id)
+  
+      const student = await StudentModel.findById(id);
+      if (!student) {
+        req.flash("error", "Student not found");
+        return res.redirect("/student/display");
+      }
+  
+      // Delete image from Cloudinary
+      if (student.image && student.image.public_id) {
+        await cloudinary.uploader.destroy(student.image.public_id);
+      }
+  
+      // Delete student from DB
       await StudentModel.findByIdAndDelete(id);
-      req.flash("success", "Student Delete successfully!");
+  
+      req.flash("success", "Student deleted successfully!");
       return res.redirect("/student/display");
     } catch (error) {
       console.log(error);
+      req.flash("error", "Something went wrong");
+      res.redirect("/student/display");
     }
   };
+  
 
   static studentView = async (req, res) => {
     try {
@@ -172,59 +183,49 @@ class StudentController {
         semester,
         password,
       } = req.body;
-
-      if (req.files) {
-        const student = await StudentModel.findById(id);
-        const imageID = student.image.public_id;
-        // console.log(imageID);
-
-        //deleting image from Cloudinary
-        await cloudinary.uploader.destroy(imageID);
-        //new image update
-        const imagefile = req.files.image;
-        const imageupload = await cloudinary.uploader.upload(
-          imagefile.tempFilePath,
-          {
-            folder: "userprofile",
-          }
-        );
-
-        var data = {
-          rollNumber,
-          name,
-          address,
-          gender,
-          email,
-          dob,
-          phone,
-          branch,
-          semester,
-          image: {
-            public_id: imageupload.public_id,
-            url: imageupload.secure_url,
-          },
-        };
-      } else {
-        var data = {
-          rollNumber,
-          name,
-          address,
-          gender,
-          email,
-          dob,
-          phone,
-          branch,
-          semester,
+  
+      const student = await StudentModel.findById(id);
+      if (!student) {
+        req.flash("error", "Student not found");
+        return res.redirect("/student/display");
+      }
+  
+      let updatedData = {
+        rollNumber,
+        name,
+        address,
+        gender,
+        email,
+        dob,
+        phone,
+        branch,
+        semester,
+      };
+  
+      if (req.file) {
+        // Delete old image from Cloudinary
+        if (student.image && student.image.public_id) {
+          await cloudinary.uploader.destroy(student.image.public_id);
+        }
+  
+        // Upload new image to Cloudinary
+        updatedData.image = {
+          public_id: req.file.filename,
+          url: req.file.path,
         };
       }
-      await StudentModel.findByIdAndUpdate(id, data);
-      req.flash("success", "Update Profile successfully");
+  
+      await StudentModel.findByIdAndUpdate(id, updatedData);
+  
+      req.flash("success", "Profile updated successfully");
       res.redirect("/student/display");
     } catch (error) {
       console.log(error);
+      req.flash("error", "Something went wrong");
+      res.redirect("/student/display");
     }
   };
-
+  
   //updatinfo
   static uddateinfoStudent = async (req, res) => {
     const student = await StudentModel.findById(req.user.id);
@@ -234,16 +235,21 @@ class StudentController {
       res.render("students/updateinfo", {
         edit: student,
         error: req.flash("error"),
-        success: req.flash("succes"),
+        success: req.flash("success"),
       });
     } catch (error) {
       console.log(error);
     }
   };
 
+ 
   static studentUpdateinfo = async (req, res) => {
+    // console.log("hello");
     try {
-      console.log(req.body)
+      
+      console.log(req.body);
+      
+  
       const studentId = req.params.id;
       const {
         Xyear,
@@ -255,40 +261,75 @@ class StudentController {
       } = req.body;
   
       const student = await StudentModel.findById(studentId);
-  
       if (!student) {
         req.flash('error', 'Student not found');
         return res.redirect('back');
       }
   
-      // Resume Upload Handling
-      let resumePath = student.resume; // Keep old if not updated
+      // === Handle Resume Upload to Cloudinary ===
       if (req.file) {
-        // Delete old resume if exists
-        if (student.resume) {
-          const oldPath = path.join(__dirname, '..', 'public', 'uploads', student.resume);
-          if (fs.existsSync(oldPath)) fs.unlinkSync(oldPath);
+        // Delete old resume from Cloudinary
+        if (student.resume && student.resume.public_id) {
+          await cloudinary.uploader.destroy(student.resume.public_id, {
+            resource_type: 'raw',
+          });
         }
-        resumePath = req.file.filename; // New uploaded file name
+  
+        // Cloudinary upload stream (for PDFs/Word docs)
+        const bufferStream = streamifier.createReadStream(req.file.buffer);
+  
+        const cloudinaryUpload = () =>
+          new Promise((resolve, reject) => {
+            const stream = cloudinary.uploader.upload_stream(
+              {
+                folder: 'student_resume',
+                resource_type: 'raw',
+              },
+              (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+              }
+            );
+            bufferStream.pipe(stream);
+          });
+  
+        const result = await cloudinaryUpload();
+  
+        // Update with new resume
+        await StudentModel.findByIdAndUpdate(studentId, {
+          Xyear,
+          Xmarks,
+          XIIyear,
+          XIImarks,
+          GraYear,
+          GraCGPA,
+          resume: {
+            public_id: result.public_id,
+            url: result.secure_url,
+          },
+        });
+  
+        req.flash('success', 'Student info and resume updated successfully');
+        return res.redirect('/uddateinfoStudent');
+  
+      } else {
+        // No resume uploaded, only academic info updated
+        await StudentModel.findByIdAndUpdate(studentId, {
+          Xyear,
+          Xmarks,
+          XIIyear,
+          XIImarks,
+          GraYear,
+          GraCGPA,
+        });
+  
+        req.flash('success', 'Student info updated successfully');
+        return res.redirect('/uddateinfoStudent');
       }
-  
-      await StudentModel.findByIdAndUpdate(studentId, {
-        Xyear,
-        Xmarks,
-        XIIyear,
-        XIImarks,
-        GraYear,
-        GraCGPA,
-        resume: resumePath,
-      });
-  
-      req.flash('success', 'Student info updated successfully');
-      res.redirect('/student/profile'); // Or wherever appropriate
-  
     } catch (error) {
-      console.log(error);
+      console.error(error);
       req.flash('error', 'Something went wrong');
-      res.redirect('back');
+      return res.redirect('back');
     }
   };
   
@@ -307,5 +348,36 @@ class StudentController {
       res.redirect("/student/display");
     }
   };
+  
+  static myApplications = async (req, res) => {
+      try {
+        const studentId = req.user.id;
+    
+        // Get all applications by student
+        const applications = await ApplicationModel.find({ studentId })
+        .populate({
+          path: "jobId",
+          model: "Job", // ✅ Matches your Job model
+          populate: {
+            path: "companyId",
+            model: "compnay", // ✅ Must match your corrected model ref
+          },
+          })
+          .sort({ appliedAt: -1 }); // Newest first
+          // console.log(applications)
+    
+        res.render("students/myApplications", {
+          title: "My Applications",
+          applications,
+        });
+    
+      } catch (error) {
+        console.log(error);
+        req.flash("error", "Unable to fetch applications");
+        res.redirect("/student/dashboard");
+      }
+    };
+
+
 }
 module.exports = StudentController;

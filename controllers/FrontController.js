@@ -76,6 +76,7 @@ class FrontController {
         const companyId = req.user.id;
         stats.jobsPosted = await JobModel.countDocuments({ companyId });
         stats.totalApplications = await ApplicationModel.countDocuments({ companyId });
+        console.log(stats.totalApplications)
         stats.hiredCount = await ApplicationModel.countDocuments({ companyId, status: 'Selected' });
       } else if (role === 'student') {
         stats.availableJobs = await JobModel.countDocuments();

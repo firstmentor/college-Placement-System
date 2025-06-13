@@ -1,0 +1,118 @@
+<%- include('../layouts/navbar.ejs') %> 
+<%- include('../layouts/sidebar.ejs') %>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">Applications Received</h1>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">Applications Received</li>
+          </ol>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+        <% if(success.length> 0){ %>
+            <div class="alert alert-success">
+              <!-- To print -->
+              <%= success %>
+            </div>
+            <% } %>
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                  <tr>
+                    <th>Student Details</th>
+                    <th>Job Title</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% applications.forEach(app => { %>
+                    <tr>
+                      <td>
+                        <% if (app.studentId.image?.url) { %>
+                            <img src="<%= app.studentId.image.url %>" alt="Profile" width="80" height="80" class="img-thumbnail mb-2"><br>
+                          <% } else { %>
+                            <img src="/default-user.png" alt="No Photo" width="80" height="80" class="img-thumbnail mb-2"><br>
+                          <% } %>
+                        <strong>Name:</strong> <%= app.studentId.name %><br>
+                        <strong>Email:</strong> <%= app.studentId.email %><br>
+                        <strong>Phone:</strong> <%= app.studentId.phone || "N/A" %><br>
+                        <strong>10th Marks:</strong> <%= app.studentId.Xmarks || "N/A" %>% (<%= app.studentId.Xyear || "N/A" %>)<br>
+                        <strong>12th Marks:</strong> <%= app.studentId.XIImarks || "N/A" %>% (<%= app.studentId.XIIyear || "N/A" %>)<br>
+                        <strong>Graduation CGPA:</strong> <%= app.studentId.GraCGPA || "N/A" %> (<%= app.studentId.GraYear || "N/A" %>)<br>
+                      </td>
+                      <td><%= app.jobId.title %></td>
+                      <td>
+                        <% if (app.studentId.resume?.url) { %>
+                          <a href="<%= app.studentId.resume.url %>" target="_blank">Download</a>
+                        <% } else { %> N/A <% } %>
+                      </td>
+                      <td><%= app.status %></td>
+                      <td>
+                        <form action="/company/update-status/<%= app._id %>" method="POST">
+                          <select name="status" class="form-select" required>
+                            <option value="Applied" <%= app.status === 'Applied' ? 'selected' : '' %>>Applied</option>
+                            <option value="Reviewed" <%= app.status === 'Reviewed' ? 'selected' : '' %>>Reviewed</option>
+                            <option value="Shortlisted" <%= app.status === 'Shortlisted' ? 'selected' : '' %>>Shortlisted</option>
+                            <option value="Rejected" <%= app.status === 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                            <option value="Selected" <%= app.status === 'Selected' ? 'selected' : '' %>>Selected</option>
+                          </select>
+                          <button type="submit" class="btn btn-primary btn-sm mt-1">Update</button>
+                        </form>
+                      </td>
+                    </tr>
+                  <% }); %>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th>Student Details</th>
+                    <th>Job Title</th>
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Update Status</th>
+                  </tr>
+                </tfoot>
+              </table>
+              
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<!--model add student-->
+
+<!-- /.modal -->
+
+<%- include('../layouts/footer.ejs') %>

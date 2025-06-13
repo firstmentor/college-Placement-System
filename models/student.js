@@ -61,7 +61,7 @@
       type: String,
       default: "0",
     },
-    XIIyear: {
+    XIImarks: {
       type: String,
       default: "0",
     },
@@ -74,8 +74,8 @@
       default: "0%",
     },
     resume: {
-      type: String,
-      default: null,
+      public_id: String,
+      url: String,
     },
     college: {
       type: String,

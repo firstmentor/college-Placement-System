@@ -1,0 +1,98 @@
+<%- include('../layouts/navbar.ejs') %> <%- include('../layouts/sidebar.ejs') %>
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">My Job Applications</h1>
+        </div>
+        <!-- /.col -->
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">My Job Applications</li>
+          </ol>
+        </div>
+        <!-- /.col -->
+      </div>
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content-header -->
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+            <h4>My Job Applications</h4>
+
+        </div>
+        <!-- /.card-header -->
+        <div class="card-body">
+          <table id="example1" class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>#</th>
+      <th>Job Title</th>
+      <th>Company</th>
+      <th>Status</th>
+      <th>Applied On</th>
+              </tr>
+            </thead>
+            <tbody>
+
+                <% if (applications.length === 0) { %>
+                    <tr><td colspan="5">No applications found.</td></tr>
+                  <% } %>
+              
+                  <% applications.forEach((app, index) => { %>
+                    <tr>
+                      <td><%= index + 1 %></td>
+                      <td><%= app.jobId?.title || 'N/A' %></td>
+                      <td><%= app.jobId?.companyId?.name || 'N/A' %></td>
+                      <td><span class="badge bg-info"><%= app.status %></span></td>
+                      <td><%= app.appliedAt.toLocaleString() %></td>
+                    </tr>
+                  <% }) %>
+              
+            </tbody>
+          </table>
+          
+          
+          
+        </div>
+        <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+
+      <!-- /.row -->
+    </div>
+    <!-- /.container-fluid -->
+  </div>
+  <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+
+
+<script>
+  $(document).ready(function () {
+    // Check if already initialized
+    if (!$.fn.DataTable.isDataTable('#example1')) {
+      $('#example1').DataTable({
+        dom: 'Bfrtip',
+        responsive: true,
+        buttons: ['excelHtml5', 'pdfHtml5']
+      });
+    }
+  });
+</script>
+ 
+
+<%- include('../layouts/footer.ejs') %>

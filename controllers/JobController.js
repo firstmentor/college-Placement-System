@@ -4,6 +4,7 @@ const StudentModel = require('../models/student');
 const CompanyModel = require('../models/compnay');
 const ApplicationModel = require('../models/ApplicationModel')
 
+const nodemailer = require("nodemailer");
 
 
 
@@ -189,30 +190,27 @@ class JobControlelr {
   // Student job apply karega
   static applyJob = async (req, res) => {
     try {
-      const student = await StudentModel.findById(req.user.id);
+      const studentId = req.user.id;
+      const student = await StudentModel.findById(studentId);
   
-      // Check if profile is complete
+      // 1. Check if profile is complete
       if (
         !student.Xyear ||
         !student.Xmarks ||
-       
         !student.XIIyear ||
-        !student.XIImarks||
+        !student.XIImarks ||
         !student.GraYear ||
         !student.GraCGPA ||
         !student.resume
-       
-
-        
       ) {
         req.flash('error', 'Please complete your profile and upload resume before applying.');
         return res.redirect('/uddateinfoStudent');
       }
   
-      // Check if already applied (optional)
+      // 2. Check if already applied
       const alreadyApplied = await ApplicationModel.findOne({
         jobId: req.params.jobId,
-        studentId: req.user.id
+        studentId: studentId,
       });
   
       if (alreadyApplied) {
@@ -220,23 +218,102 @@ class JobControlelr {
         return res.redirect('/student/jobs');
       }
   
-      // Save application
+      // 3. Save application
       const application = new ApplicationModel({
         jobId: req.params.jobId,
-        studentId: req.user.id,
+        studentId: studentId,
         status: 'Applied',
       });
-  
       await application.save();
   
-      req.flash('success', 'Applied successfully!');
+      // 4. Fetch job and company details
+      const job = await JobModel.findById(req.params.jobId).populate('companyId');
+      const company = job.companyId;
+  
+      // 5. Setup email
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.MAIL_ID,
+          pass: process.env.MAIL_PASS,
+        },
+      });
+  
+      // 6. Send email to company
+      await transporter.sendMail({
+        from: `"Jiwaji University" <${process.env.MAIL_ID}>`,
+        to: company.email,
+        subject: `New Application for ${job.title}`,
+        html: `
+          <h3>New Student Application</h3>
+          <p><strong>Name:</strong> ${student.name}</p>
+          <p><strong>Email:</strong> ${student.email}</p>
+          <p><strong>Phone:</strong> ${student.phone}</p>
+          <p><strong>Job:</strong> ${job.title}</p>
+          <p><strong>Department:</strong> ${job.department}</p>
+          <p><strong>Resume:</strong> <a href="${student.resume.url}" target="_blank">View Resume</a></p>
+          <p><strong>Applied On:</strong> ${new Date().toLocaleString()}</p>
+          <p>Login to your dashboard to view more details.</p>
+        `,
+      });
+  
+      // 7. Send confirmation email to student
+      await transporter.sendMail({
+        from: `"Jiwaji University" <${process.env.MAIL_ID}>`,
+        to: student.email,
+        subject: `You applied for ${job.title} at ${company.name}`,
+        html: `
+          <h3>Application Successful!</h3>
+          <p>Dear ${student.name},</p>
+          <p>You have successfully applied for:</p>
+          <ul>
+            <li><strong>Job:</strong> ${job.title}</li>
+            <li><strong>Company:</strong> ${company.name}</li>
+            <li><strong>Location:</strong> ${job.location}</li>
+            <li><strong>Applied On:</strong> ${new Date().toLocaleString()}</li>
+          </ul>
+          <p>We wish you the best!</p>
+        `,
+      });
+  
+      // 8. Redirect
+      req.flash('success', 'Applied successfully! Confirmation emails sent.');
       res.redirect('/student/my-applications');
+  
     } catch (error) {
       console.log(error);
       req.flash('error', 'Something went wrong');
       res.redirect('/student/jobs');
     }
   };
+
+  static myApplications = async (req, res) => {
+    try {
+      const studentId = req.user.id;
+  
+      // Get all applications by student
+      const applications = await ApplicationModel.find({ studentId })
+        .populate({
+          path: "jobId",
+          populate: {
+            path: "companyId",
+            model: "company", // Match your Company model name
+          },
+        })
+        .sort({ appliedAt: -1 }); // Newest first
+  
+      res.render("student/myApplications", {
+        title: "My Applications",
+        applications,
+      });
+  
+    } catch (error) {
+      console.log(error);
+      req.flash("error", "Unable to fetch applications");
+      res.redirect("/student/dashboard");
+    }
+  };
+  
 
  
 

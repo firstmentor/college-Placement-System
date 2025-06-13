@@ -3,10 +3,16 @@ const FrontController = require('../controllers/FrontController')
 const StudentController = require('../controllers/StudentController')
 const HodController = require('../controllers/HodController')
 const checkAuth =require('../middlewares/auth')
+// const upload1 = require('../config/upload'); // ✅ correct relative path
+const upload = require("../middlewares/multer");
+const uploadResume = require('../middlewares/uploadResume');
+
+
+
+
 const CompnayController = require('../controllers/CompnayController')
 const JobControlelr = require('../controllers/JobController')
 const route =express.Router()
-const upload = require('../middlewares/multer');
 
 
 
@@ -28,11 +34,11 @@ route.get('/logout',FrontController.logout)
 
 //student controlelr
 route.get('/student/display',checkAuth,StudentController.display)
-route.post('/student/insert',checkAuth,StudentController.studentInsert)
+route.post('/student/insert',checkAuth, upload.single("image"),StudentController.studentInsert)
 route.get('/studentDelete/:id',checkAuth,StudentController.studentDelete)
 route.get('/studentView/:id',checkAuth,StudentController.studentView)
 route.get('/studentEdit/:id',checkAuth,StudentController.studentEdit)
-route.post('/studentUpdate/:id',checkAuth,StudentController.studentUpdate)
+route.post('/studentUpdate/:id',checkAuth,upload.single("image"),StudentController.studentUpdate)
 //
 route.post('/student/status/:id', checkAuth, StudentController.toggleStatus);
 
@@ -51,7 +57,10 @@ route.post('/student/status/:id', checkAuth, StudentController.toggleStatus);
 
 //update info student
 route.get('/uddateinfoStudent/',checkAuth,StudentController.uddateinfoStudent)
-route.post('/studentUpdateInfo/:id', upload.single('resume'),StudentController.studentUpdateinfo)
+route.post('/studentUpdateInfo/:id', uploadResume.single('resume'),StudentController.studentUpdateinfo)
+route.get('/student/my-applications/',checkAuth,StudentController.myApplications)
+
+
 
 
 
@@ -65,14 +74,24 @@ route.post('/studentUpdateInfo/:id', upload.single('resume'),StudentController.s
 
 //hod Controller
 route.get('/hod/display',checkAuth,HodController.display)
-route.post('/inserthod',checkAuth,HodController.insertHod)
+route.post('/inserthod',checkAuth,upload.single("image"),HodController.insertHod)
 route.get('/hodDelete/:id',checkAuth,HodController.hodDelete)
+route.post("/hod/update/:id", upload.single("image"), HodController.hodUpdate);
+
 
 
 
 //compnay controller
 route.get('/company/display',checkAuth,CompnayController.display)
-route.post('/compnayInsert',checkAuth,CompnayController.compnayInsert)
+route.post('/compnayInsert',checkAuth,upload.single("image"),CompnayController.compnayInsert)
+route.post("/company/update/:id", upload.single("image"), CompnayController.companyUpdate);
+route.get("/company/delete/:id", CompnayController.companyDelete);
+route.get("/company/edit/:id", CompnayController.companyEdit);
+route.get('/applications', checkAuth, CompnayController.companyViewApplications);
+route.post('/company/update-status/:id', checkAuth, CompnayController.updateApplicationStatus);
+
+
+
 
 
 
