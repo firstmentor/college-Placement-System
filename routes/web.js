@@ -10,6 +10,7 @@ const uploadResume = require('../middlewares/uploadResume');
 
 
 
+
 const CompnayController = require('../controllers/CompnayController')
 const JobControlelr = require('../controllers/JobController')
 const route =express.Router()
@@ -76,7 +77,11 @@ route.get('/student/my-applications/',checkAuth,StudentController.myApplications
 route.get('/hod/display',checkAuth,HodController.display)
 route.post('/inserthod',checkAuth,upload.single("image"),HodController.insertHod)
 route.get('/hodDelete/:id',checkAuth,HodController.hodDelete)
-route.post("/hod/update/:id", upload.single("image"), HodController.hodUpdate);
+route.post("/hod/update/:id",checkAuth, upload.single("image"), HodController.hodUpdate);
+route.get("/placementDrive",checkAuth, HodController.departmentWiseApplications);
+
+
+
 
 
 

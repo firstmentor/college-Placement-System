@@ -228,6 +228,42 @@ class HodController {
     }
   };
 
+
+  static async departmentWiseApplications(req, res) {
+    try {
+      const department = req.user.department; // HOD's department
+  
+      // Step 1: Get students of this department
+      const students = await StudentModel.find({ department }, '_id');
+      const studentIds = students.map((s) => s._id);
+  
+      // Step 2: Get applications of those students
+      const applications = await ApplicationModel.find({
+        studentId: { $in: studentIds },
+      })
+        .populate({
+          path: 'studentId',
+          select: 'name email image branch resume',
+        })
+        .populate({
+          path: "jobId",
+          model: "Job", // ✅ Matches your Job model
+          populate: {
+            path: "companyId",
+            model: "compnay", // ✅ Must match your corrected model ref
+            selete :"name"
+          },
+          })
+        .sort({ appliedAt: -1 });
+  
+      res.render('hod/department-applications', { applications });
+    } catch (error) {
+      console.error(error);
+      res.render('hod/department-applications', { applications: [] });
+    }
+  }
+  
+
  
   
   
