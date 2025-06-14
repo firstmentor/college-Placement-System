@@ -4,6 +4,7 @@ const nodemailer = require("nodemailer");
 const StudentModel = require('../models/student')
 const { cloudinary } = require("../config/cloudinary");
 const ApplicationModel = require('../models/ApplicationModel');
+const AttendanceModel =require('../models/attendanceSchema')
 
 
 
@@ -160,7 +161,20 @@ class HodController {
     }
   };
 
-
+  static hodEdit = async (req, res) => {
+    try {
+      const id = req.params.id;
+  
+      // Step 1: पहले HOD details लो ताकि image public_id मिल जाए
+      const hod = await HodModel.findById(id);
+      res.render('hod/edit',{hod,success:req.flash('success'),error:req.flash('error')})
+    } catch (error) {
+      console.log(error);
+      req.flash("error", "Failed to delete HOD.");
+      return res.redirect("/hod/display");
+    }
+  };
+  
   static hodUpdate = async (req, res) => {
     try {
       const id = req.params.id;
@@ -262,6 +276,16 @@ class HodController {
       res.render('hod/department-applications', { applications: [] });
     }
   }
+
+
+  
+
+ 
+
+  
+  
+  
+
   
 
  

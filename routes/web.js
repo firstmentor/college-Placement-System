@@ -13,6 +13,7 @@ const uploadResume = require('../middlewares/uploadResume');
 
 const CompnayController = require('../controllers/CompnayController')
 const JobControlelr = require('../controllers/JobController')
+const AttendanceController = require('../controllers/AttendanceController')
 const route =express.Router()
 
 
@@ -29,6 +30,9 @@ route.get('/dashboard',checkAuth,FrontController.dashboard)
 route.post('/registerAdmin',FrontController.registerAdmin)
 route.post('/verifyLogin',FrontController.verifyLogin)
 route.get('/logout',FrontController.logout)
+route.get('/change-password', checkAuth, FrontController.changePasswordPage);
+route.post('/change-password', checkAuth, FrontController.changePassword);
+
 
 
 
@@ -77,8 +81,17 @@ route.get('/student/my-applications/',checkAuth,StudentController.myApplications
 route.get('/hod/display',checkAuth,HodController.display)
 route.post('/inserthod',checkAuth,upload.single("image"),HodController.insertHod)
 route.get('/hodDelete/:id',checkAuth,HodController.hodDelete)
+route.get("/hod/hodEdit/:id",checkAuth,HodController.hodEdit);
+
 route.post("/hod/update/:id",checkAuth, upload.single("image"), HodController.hodUpdate);
 route.get("/placementDrive",checkAuth, HodController.departmentWiseApplications);
+
+
+
+
+
+
+
 
 
 
@@ -111,17 +124,20 @@ route.post('/compnay/job/delete/:id', JobControlelr.deleteJob);
 //Student ke liye job list
 route.get('/student/jobs',checkAuth,JobControlelr.showJobsForStudent);
 route.post("/student/apply/:jobId", JobControlelr.applyJob);
-
-
-
-
-
-
-
-
-
-
 route.get('/SelectedStudent/display',checkAuth,JobControlelr.SelectedStudent)
+
+
+
+//AttendanceController
+route.get("/hod/attendance", checkAuth, AttendanceController.viewAttendanceList);
+route.get("/hod/attendance/new", checkAuth, AttendanceController.addForm);
+route.post("/hod/attendance", checkAuth, AttendanceController.insertAttendance);
+route.get("/hod/attendance/edit/:id", checkAuth, AttendanceController.editAttendanceForm);
+route.post("/hod/attendance/update/:id", checkAuth, AttendanceController.updateAttendance);
+route.get("/hod/attendance/delete/:id", checkAuth, AttendanceController.deleteAttendance);
+route.get('/hod/attendance/report', checkAuth, AttendanceController.attendanceReport);
+route.get('/hod/attendance/export/pdf', checkAuth, AttendanceController.exportPDF);
+route.get('/hod/attendance/report/export/excel', checkAuth, AttendanceController.exportExcel);
 
 
 

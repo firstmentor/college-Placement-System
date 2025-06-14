@@ -10,6 +10,8 @@ const setUserInfo = (req, res, next) => {
       res.locals.name = decoded.name;
       res.locals.role = decoded.role;
       res.locals.email =decoded.email;
+      res.locals.department =decoded.department
+      res.locals.image =decoded.image
     } catch (err) {
       res.locals.name = null;
       res.locals.role = null;

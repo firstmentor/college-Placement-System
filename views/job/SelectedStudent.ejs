@@ -3,58 +3,61 @@
 
 <!-- Content Wrapper. Contains page content -->
 <div class="content-wrapper">
-  <!-- Content Header (Page header) -->
+  <!-- Content Header -->
   <div class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1 class="m-0 text-dark">Select Students</h1>
+          <h1 class="m-0 text-dark">Selected Students</h1>
         </div>
-        <!-- /.col -->
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
             <li class="breadcrumb-item"><a href="#">Home</a></li>
-            <li class="breadcrumb-item active">Select Students</li>
+            <li class="breadcrumb-item active">Selected Students</li>
           </ol>
         </div>
-        <!-- /.col -->
       </div>
-      <!-- /.row -->
     </div>
-    <!-- /.container-fluid -->
   </div>
-  <!-- /.content-header -->
 
   <!-- Main content -->
   <div class="content">
     <div class="container-fluid">
-      <div class="content p-3">
-        <div class="row">
+      <div class="row">
+        <% if (applications.length === 0) { %>
+          <div class="col-12">
+            <div class="alert alert-info text-center">No selected students found.</div>
+          </div>
+        <% } else { %>
           <% applications.forEach(app => { %>
             <div class="col-md-4">
               <div class="card shadow mb-4">
-                <img src="<%= app.studentId.image?.url || '/default.png' %>" class="card-img-top" alt="Student Photo" style="height: 300px; object-fit: cover;" />
+                <img 
+                  src="<%= app.studentId?.image?.url || '/default.png' %>" 
+                  class="card-img-top" 
+                  alt="Student Photo" 
+                  style="height: 250px; object-fit: cover;" 
+                />
                 <div class="card-body">
-                  
-                  <br>
-                  <p><strong>Name:</strong> <%= app.studentId.name %></p>
-                  <p><strong>Email:</strong> <%= app.studentId.email %></p>
-                  <p><strong>Branch:</strong> <%= app.studentId.branch %></p>
-                  <p><strong>Company:</strong> <%= app.jobId.companyId?.name %></p>
-                  <p><strong>Job:</strong> <%= app.jobId.title %></p>
-                
-                  <a href="<%= app.studentId.resume?.url %>" class="btn btn-sm btn-primary" target="_blank">View Resume</a>
+                  <h5 class="card-title"><strong>Name:</strong> <%= app.studentId?.name || 'N/A' %></h5>
+                 <br><br>
+                  <p><strong>Email:</strong> <%= app.studentId?.email || 'N/A' %></p>
+                  <p><strong>Branch:</strong> <%= app.studentId?.branch || 'N/A' %></p>
+                  <p><strong>Company:</strong> <%= app.jobId?.companyId?.name || 'N/A' %></p>
+                  <p><strong>Job:</strong> <%= app.jobId?.title || 'N/A' %></p>
+                  <% if (app.studentId?.resume?.url) { %>
+                    <a href="<%= app.studentId.resume.url %>" class="btn btn-sm btn-primary" target="_blank">View Resume</a>
+                  <% } else { %>
+                    <span class="text-muted">Resume not uploaded</span>
+                  <% } %>
                 </div>
               </div>
             </div>
           <% }) %>
-        </div>
+        <% } %>
       </div>
+    </div>
   </div>
-  <!-- /.content -->
 </div>
-<!-- /.content-wrapper -->
-
-
 
 <%- include('../layouts/footer.ejs') %>

@@ -1,0 +1,63 @@
+<%- include('../layouts/navbar.ejs') %>
+<%- include('../layouts/sidebar.ejs') %>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Page Header -->
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">Edit Attendance</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="/hod/dashboard">Home</a></li>
+            <li class="breadcrumb-item active">Edit Attendance</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="content">
+    <div class="container-fluid">
+      <% if (success && success.length > 0) { %>
+        <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <% if (error && error.length > 0) { %>
+        <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+
+      <div class="card">
+        <div class="card-body">
+          <form action="/hod/attendance/update/<%= record._id %>" method="POST">
+            <div class="form-group">
+              <label>Student Name</label>
+              <input type="text" class="form-control" value="<%= record.studentId.name %>" readonly>
+            </div>
+
+            <div class="form-group">
+              <label>Status</label>
+              <select name="status" class="form-control" required>
+                <option value="Present" <%= record.status === 'Present' ? 'selected' : '' %>>Present</option>
+                <option value="Absent" <%= record.status === 'Absent' ? 'selected' : '' %>>Absent</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Date</label>
+              <input type="date" name="date" class="form-control" value="<%= record.date.toISOString().slice(0, 10) %>" required>
+            </div>
+
+            <button type="submit" class="btn btn-success">Update Attendance</button>
+            <a href="/hod/attendance" class="btn btn-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer.ejs') %>

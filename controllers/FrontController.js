@@ -162,7 +162,7 @@ class FrontController {
       console.log(isMatch)
       // Generate JWT token
       const token = jwt.sign(
-        { id: user._id, role: role, name: user.name ,email:user.email},
+        { id: user._id, role: role, name: user.name ,email:user.email, department:user.department ,image:user.image},
         process.env.jwt_secret_key, // secret key — ise environment variable me rakhna best practice hai
         { expiresIn: "1d" }
       );
@@ -196,5 +196,52 @@ class FrontController {
       console.log(error);
     }
   };
+
+  static changePasswordPage(req, res) {
+    res.render('change-password', {
+      error: req.flash('error'),
+      success: req.flash('success'),
+      user: req.user,
+    });
+  }
+  static async changePassword(req, res) {
+    try {
+      const { oldPassword, newPassword, confirmPassword } = req.body;
+      const userId = req.user.id;
+      const role = req.user.role;
+
+      // Identify correct model
+      let Model;
+      if (role === 'admin') Model = AdminModel;
+      else if (role === 'hod') Model = HODModel;
+      else if (role === 'company') Model = CompanyModel;
+      else if (role === 'student') Model = StudentModel;
+      else throw new Error('Invalid Role');
+
+      const user = await Model.findById(userId);
+      if (!user) throw new Error('User not found');
+
+      const isMatch = await bcrypt.compare(oldPassword, user.password);
+      if (!isMatch) {
+        req.flash('error', 'Old password is incorrect.');
+        return res.redirect('/change-password');
+      }
+
+      if (newPassword !== confirmPassword) {
+        req.flash('error', 'New passwords do not match.');
+        return res.redirect('/change-password');
+      }
+
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+
+      req.flash('success', 'Password changed successfully.');
+      res.redirect('/change-password');
+    } catch (err) {
+      console.error(err);
+      req.flash('error', 'Something went wrong.');
+      res.redirect('/change-password');
+    }
+  }
 }
 module.exports = FrontController;
