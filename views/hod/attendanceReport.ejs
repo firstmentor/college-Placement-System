@@ -4,29 +4,43 @@
 <div class="content-wrapper">
   <div class="content-header">
     <div class="container-fluid">
-      <h1 class="m-0 text-dark">Attendance Report</h1>
+      <h1 class="m-0 text-dark">Monthly Attendance Report</h1>
     </div>
   </div>
 
   <div class="content">
     <div class="container-fluid">
+
       <!-- Filter Form -->
       <form action="/hod/attendance/report" method="GET" class="form-inline mb-4">
         <label for="branch" class="mr-2">Department:</label>
         <select name="branch" id="branch" class="form-control mr-3" required>
           <option value="">Select Branch</option>
-          <option value="CSE">CSE</option>
-          <option value="IT">IT</option>
-          <option value="EC">EC</option>
-          <option value="AI">AI</option>
-          <option value="MCA">MCA</option>
+          <% const branches = ['CSE', 'IT', 'EC', 'AI', 'MCA']; %>
+          <% branches.forEach(b => { %>
+            <option value="<%= b %>" <%= branch === b ? 'selected' : '' %>><%= b %></option>
+          <% }) %>
         </select>
 
         <label for="semester" class="mr-2">Semester:</label>
         <select name="semester" id="semester" class="form-control mr-3" required>
           <option value="">Select Semester</option>
           <% for (let i = 1; i <= 8; i++) { %>
-            <option value="<%= i %>"><%= i %>th Sem</option>
+            <option value="<%= i %>" <%= semester == i ? 'selected' : '' %>><%= i %>th Sem</option>
+          <% } %>
+        </select>
+
+        <label for="month" class="mr-2">Month:</label>
+        <select name="month" class="form-control mr-3" required>
+          <% for (let m = 1; m <= 12; m++) { %>
+            <option value="<%= m %>" <%= month == m ? 'selected' : '' %>><%= m %></option>
+          <% } %>
+        </select>
+
+        <label for="year" class="mr-2">Year:</label>
+        <select name="year" class="form-control mr-3" required>
+          <% for (let y = 2023; y <= 2025; y++) { %>
+            <option value="<%= y %>" <%= year == y ? 'selected' : '' %>><%= y %></option>
           <% } %>
         </select>
 
@@ -58,10 +72,13 @@
       </table>
 
       <!-- Export Buttons -->
-      <div class="mt-3">
-        <a href="/hod/attendance/export/pdf?branch=<%= branch %>&semester=<%= semester %>" class="btn btn-danger">Export PDF</a>
-        <a href="/hod/attendance/export/excel?branch=<%= branch %>&semester=<%= semester %>" class="btn btn-success">Export Excel</a>
-      </div>
+      <% if (records.length > 0) { %>
+        <div class="mt-3">
+          <a href="/hod/attendance/export/pdf?branch=<%= branch %>&semester=<%= semester %>&month=<%= month %>&year=<%= year %>" class="btn btn-danger">Export PDF</a>
+          <a href="/hod/attendance/export/excel?branch=<%= branch %>&semester=<%= semester %>&month=<%= month %>&year=<%= year %>" class="btn btn-success">Export Excel</a>
+        </div>
+      <% } %>
+
     </div>
   </div>
 </div>

@@ -1,0 +1,75 @@
+<%- include('../layouts/navbar.ejs') %> 
+<%- include('../layouts/sidebar.ejs') %>
+
+<div class="content-wrapper">
+  <div class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        <div class="col-sm-6">
+          <h1 class="m-0 text-dark">My Attendance</h1>
+        </div>
+        <div class="col-sm-6">
+          <ol class="breadcrumb float-sm-right">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item active">My Attendance</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+            <h2>My Attendance</h2>
+
+          
+        </div>
+        <div class="card-body">
+           
+            <form method="GET" action="/student/my-attendance" class="form-inline mb-4">
+              <label class="mr-2">Month:</label>
+              <select name="month" class="form-control mr-2">
+                <% for (let m = 1; m <= 12; m++) { %>
+                  <option value="<%= m %>" <%= month == m ? 'selected' : '' %>><%= m %></option>
+                <% } %>
+              </select>
+          
+              <label class="mr-2">Year:</label>
+              <select name="year" class="form-control mr-2">
+                <% for (let y = 2023; y <= 2026; y++) { %>
+                  <option value="<%= y %>" <%= year == y ? 'selected' : '' %>><%= y %></option>
+                <% } %>
+              </select>
+          
+              <button type="submit" class="btn btn-primary">Filter</button>
+            </form>
+          
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (records.length === 0) { %>
+                  <tr><td colspan="2">No attendance records found.</td></tr>
+                <% } else { %>
+                  <% records.forEach(r => { %>
+                    <tr>
+                      <td><%= new Date(r.date).toDateString() %></td>
+                      <td><%= r.status %></td>
+                    </tr>
+                  <% }) %>
+                <% } %>
+              </tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/footer.ejs') %>

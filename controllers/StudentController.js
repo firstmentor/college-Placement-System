@@ -2,16 +2,12 @@ const StudentModel = require("../models/student");
 const bcrypt = require("bcrypt");
 const sendMail = require("../Utility/sendMail");
 const HodModel = require("../models/hod");
-const path = require('path');
-const fs = require('fs');
-const streamifier = require('streamifier');
+const path = require("path");
+const fs = require("fs");
+const streamifier = require("streamifier");
 const { cloudinary } = require("../config/cloudinary");
-const ApplicationModel =require('../models/ApplicationModel')
-const job = require('../models/job')
-
-
-
-
+const ApplicationModel = require("../models/ApplicationModel");
+const job = require("../models/job");
 
 class StudentController {
   static display = async (req, res) => {
@@ -107,7 +103,6 @@ class StudentController {
 
       req.flash("success", "Student registered successfully and email sent.");
       res.redirect("/student/display");
-
     } catch (err) {
       console.log(err);
       req.flash("error", "Failed to register student.");
@@ -115,25 +110,24 @@ class StudentController {
     }
   };
 
-
   static studentDelete = async (req, res) => {
     try {
       const id = req.params.id;
-  
+
       const student = await StudentModel.findById(id);
       if (!student) {
         req.flash("error", "Student not found");
         return res.redirect("/student/display");
       }
-  
+
       // Delete image from Cloudinary
       if (student.image && student.image.public_id) {
         await cloudinary.uploader.destroy(student.image.public_id);
       }
-  
+
       // Delete student from DB
       await StudentModel.findByIdAndDelete(id);
-  
+
       req.flash("success", "Student deleted successfully!");
       return res.redirect("/student/display");
     } catch (error) {
@@ -142,7 +136,6 @@ class StudentController {
       res.redirect("/student/display");
     }
   };
-  
 
   static studentView = async (req, res) => {
     try {
@@ -183,13 +176,13 @@ class StudentController {
         semester,
         password,
       } = req.body;
-  
+
       const student = await StudentModel.findById(id);
       if (!student) {
         req.flash("error", "Student not found");
         return res.redirect("/student/display");
       }
-  
+
       let updatedData = {
         rollNumber,
         name,
@@ -201,22 +194,22 @@ class StudentController {
         branch,
         semester,
       };
-  
+
       if (req.file) {
         // Delete old image from Cloudinary
         if (student.image && student.image.public_id) {
           await cloudinary.uploader.destroy(student.image.public_id);
         }
-  
+
         // Upload new image to Cloudinary
         updatedData.image = {
           public_id: req.file.filename,
           url: req.file.path,
         };
       }
-  
+
       await StudentModel.findByIdAndUpdate(id, updatedData);
-  
+
       req.flash("success", "Profile updated successfully");
       res.redirect("/student/display");
     } catch (error) {
@@ -225,7 +218,7 @@ class StudentController {
       res.redirect("/student/display");
     }
   };
-  
+
   //updatinfo
   static uddateinfoStudent = async (req, res) => {
     const student = await StudentModel.findById(req.user.id);
@@ -242,48 +235,38 @@ class StudentController {
     }
   };
 
- 
   static studentUpdateinfo = async (req, res) => {
     // console.log("hello");
     try {
-      
       console.log(req.body);
-      
-  
+
       const studentId = req.params.id;
-      const {
-        Xyear,
-        Xmarks,
-        XIIyear,
-        XIImarks,
-        GraYear,
-        GraCGPA,
-      } = req.body;
-  
+      const { Xyear, Xmarks, XIIyear, XIImarks, GraYear, GraCGPA } = req.body;
+
       const student = await StudentModel.findById(studentId);
       if (!student) {
-        req.flash('error', 'Student not found');
-        return res.redirect('back');
+        req.flash("error", "Student not found");
+        return res.redirect("back");
       }
-  
+
       // === Handle Resume Upload to Cloudinary ===
       if (req.file) {
         // Delete old resume from Cloudinary
         if (student.resume && student.resume.public_id) {
           await cloudinary.uploader.destroy(student.resume.public_id, {
-            resource_type: 'raw',
+            resource_type: "raw",
           });
         }
-  
+
         // Cloudinary upload stream (for PDFs/Word docs)
         const bufferStream = streamifier.createReadStream(req.file.buffer);
-  
+
         const cloudinaryUpload = () =>
           new Promise((resolve, reject) => {
             const stream = cloudinary.uploader.upload_stream(
               {
-                folder: 'student_resume',
-                resource_type: 'raw',
+                folder: "student_resume",
+                resource_type: "raw",
               },
               (error, result) => {
                 if (error) return reject(error);
@@ -292,9 +275,9 @@ class StudentController {
             );
             bufferStream.pipe(stream);
           });
-  
+
         const result = await cloudinaryUpload();
-  
+
         // Update with new resume
         await StudentModel.findByIdAndUpdate(studentId, {
           Xyear,
@@ -308,10 +291,9 @@ class StudentController {
             url: result.secure_url,
           },
         });
-  
-        req.flash('success', 'Student info and resume updated successfully');
-        return res.redirect('/uddateinfoStudent');
-  
+
+        req.flash("success", "Student info and resume updated successfully");
+        return res.redirect("/uddateinfoStudent");
       } else {
         // No resume uploaded, only academic info updated
         await StudentModel.findByIdAndUpdate(studentId, {
@@ -322,17 +304,16 @@ class StudentController {
           GraYear,
           GraCGPA,
         });
-  
-        req.flash('success', 'Student info updated successfully');
-        return res.redirect('/uddateinfoStudent');
+
+        req.flash("success", "Student info updated successfully");
+        return res.redirect("/uddateinfoStudent");
       }
     } catch (error) {
       console.error(error);
-      req.flash('error', 'Something went wrong');
-      return res.redirect('back');
+      req.flash("error", "Something went wrong");
+      return res.redirect("back");
     }
   };
-  
 
   static toggleStatus = async (req, res) => {
     try {
@@ -348,13 +329,13 @@ class StudentController {
       res.redirect("/student/display");
     }
   };
-  
+
   static myApplications = async (req, res) => {
-      try {
-        const studentId = req.user.id;
-    
-        // Get all applications by student
-        const applications = await ApplicationModel.find({ studentId })
+    try {
+      const studentId = req.user.id;
+
+      // Get all applications by student
+      const applications = await ApplicationModel.find({ studentId })
         .populate({
           path: "jobId",
           model: "Job", // ✅ Matches your Job model
@@ -362,22 +343,19 @@ class StudentController {
             path: "companyId",
             model: "compnay", // ✅ Must match your corrected model ref
           },
-          })
-          .sort({ appliedAt: -1 }); // Newest first
-          // console.log(applications)
-    
-        res.render("students/myApplications", {
-          title: "My Applications",
-          applications,
-        });
-    
-      } catch (error) {
-        console.log(error);
-        req.flash("error", "Unable to fetch applications");
-        res.redirect("/student/dashboard");
-      }
-    };
+        })
+        .sort({ appliedAt: -1 }); // Newest first
+      // console.log(applications)
 
-
+      res.render("students/myApplications", {
+        title: "My Applications",
+        applications,
+      });
+    } catch (error) {
+      console.log(error);
+      req.flash("error", "Unable to fetch applications");
+      res.redirect("/student/dashboard");
+    }
+  };
 }
 module.exports = StudentController;

@@ -1,0 +1,24 @@
+<%- include('../layouts/navbar') %>
+
+<h3>Monthly Attendance Summary (<%= month %>/<%= year %>)</h3>
+
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th>Student Name</th>
+      <th>Total Days</th>
+      <th>Present</th>
+      <th>Absent</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% summary.forEach(s => { %>
+      <tr>
+        <td><%= s.name %></td>
+        <td><%= s.totalDays %></td>
+        <td><%= s.presentCount %></td>
+        <td><%= s.absentCount %></td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>

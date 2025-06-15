@@ -19,4 +19,15 @@ const checkAuth = (req, res,next) => {
   }
 };
 
+// middlewares/auth.js
+
+exports.isStudent = (req, res, next) => {
+  if (req.user && req.user.role === "student") {
+    next();
+  } else {
+    res.redirect("/login");
+  }
+};
+
+
 module.exports = checkAuth;

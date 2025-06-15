@@ -51,27 +51,27 @@
     },
     Xyear: {
       type: String,
-      default: "0",
+      
     },
     Xmarks: {
       type: String,
-      default: "0%",
+     
     },
     XIIyear: {
       type: String,
-      default: "0",
+      
     },
     XIImarks: {
       type: String,
-      default: "0",
+     
     },
     GraYear: {
       type: String,
-      default: "0",
+     
     },
     GraCGPA: {
       type: String,
-      default: "0%",
+      
     },
     resume: {
       public_id: String,

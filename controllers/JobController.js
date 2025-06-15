@@ -173,6 +173,21 @@ class JobControlelr {
         .sort({ createdAt: -1 });
   
       const student = await StudentModel.findById(req.user.id);
+      if(req.user.role !== 'admin')
+      {
+        if (
+          !student.Xyear ||
+          !student.Xmarks ||
+          !student.XIIyear ||
+          !student.XIImarks ||
+          !student.GraYear ||
+          !student.GraCGPA ||
+          !student.resume
+        ) {
+          req.flash('error', 'Please complete your profile and upload resume before applying.');
+          return res.redirect('/uddateinfoStudent');
+        }
+      }
   
       res.render('students/jobsList', {
         jobs,
@@ -192,6 +207,7 @@ class JobControlelr {
     try {
       const studentId = req.user.id;
       const student = await StudentModel.findById(studentId);
+      // console.log(student)
   
       // 1. Check if profile is complete
       if (

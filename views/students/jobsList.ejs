@@ -45,19 +45,20 @@
               </p>
 
               <!-- Apply Button -->
-              <% const isComplete = student?.Xmarks && student?.XIImarks &&
-              student?.GraCGPA && student?.resume; %> <% if (isComplete) { %>
+              <% 
+              const isComplete = student?.Xmarks && student?.XIImarks &&
+                                 student?.GraCGPA && student?.resume; 
+            %>
+            
+            <% if (isComplete) { %>
               <form action="/student/apply/<%= job._id %>" method="POST">
                 <button class="btn btn-success btn-sm w-100">Apply</button>
               </form>
-              <% } else if (!role === "admin"){ %>
-              <a
-                href="/uddateinfoStudent"
-                class="btn btn-warning btn-sm w-100"
-              >
+            <% } else if (role !== "admin") { %>
+              <a href="/uddateinfoStudent" class="btn btn-warning btn-sm w-100">
                 Complete Profile to Apply
               </a>
-              <% } %>
+            <% } %>
             </div>
           </div>
         </div>

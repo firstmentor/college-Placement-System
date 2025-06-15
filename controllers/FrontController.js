@@ -56,38 +56,45 @@ class FrontController {
       const name = req.user.name;
   
       let stats = {};
+      let isComplete = true;
   
       if (role === 'admin') {
         stats.totalStudents = await StudentModel.countDocuments();
         stats.totalHods = await HodModel.countDocuments();
         stats.totalCompanies = await CompanyModel.countDocuments();
         stats.totalJobs = await JobModel.countDocuments();
-        stats.selectedStudents = await ApplicationModel.countDocuments({ status: 'Selected' }); // ✅ Add this
-
+        stats.selectedStudents = await ApplicationModel.countDocuments({ status: 'Selected' });
+  
       } else if (role === 'hod') {
         const hod = await HodModel.findOne({ email: req.user.email });
         const dept = hod.department;
-        // console.log(dept)
+  
         stats.deptStudents = await StudentModel.countDocuments({ branch: dept });
-        // console.log(stats.deptStudents)
         stats.appliedStudents = await ApplicationModel.countDocuments({ branch: dept });
-        stats.selectedStudents = await ApplicationModel.countDocuments({ branch: dept, status: 'Selected' });
+        stats.selectedInDept = await ApplicationModel.countDocuments({ branch: dept, status: 'Selected' });
+  
       } else if (role === 'company') {
         const companyId = req.user.id;
+  
         stats.jobsPosted = await JobModel.countDocuments({ companyId });
         stats.totalApplications = await ApplicationModel.countDocuments({ companyId });
-        console.log(stats.totalApplications)
-        stats.hiredCount = await ApplicationModel.countDocuments({ companyId, status: 'Selected' });
+        stats.selectedStudents = await ApplicationModel.countDocuments({ companyId, status: 'Selected' });
+  
       } else if (role === 'student') {
         stats.availableJobs = await JobModel.countDocuments();
-        stats.jobsApplied = await ApplicationModel.countDocuments({ studentId: req.user.id });
-        stats.interviews = await ApplicationModel.countDocuments({ studentId: req.user.id, status: 'Interview Scheduled' });
+        stats.appliedJobs = await ApplicationModel.countDocuments({ studentId: req.user.id });
+        stats.statusPending = await ApplicationModel.countDocuments({ studentId: req.user.id, status: 'Pending' });
+        stats.statusSelected = await ApplicationModel.countDocuments({ studentId: req.user.id, status: 'Selected' });
+  
+        const student = await StudentModel.findOne({ email: req.user.email });
+        isComplete = !!(student?.Xmarks && student?.XIImarks && student?.GraCGPA && student?.resume);
       }
   
       res.render("dashboard", {
         role,
         name,
         stats,
+        isComplete, // 🔥 Pass for student alert
       });
     } catch (error) {
       console.log(error);
@@ -95,6 +102,8 @@ class FrontController {
       res.redirect("/login");
     }
   };
+  
+  
   
   
   

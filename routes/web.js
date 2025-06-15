@@ -6,6 +6,8 @@ const checkAuth =require('../middlewares/auth')
 // const upload1 = require('../config/upload'); // ✅ correct relative path
 const upload = require("../middlewares/multer");
 const uploadResume = require('../middlewares/uploadResume');
+const { isStudent } = require("../middlewares/auth");
+
 
 
 
@@ -138,6 +140,12 @@ route.get("/hod/attendance/delete/:id", checkAuth, AttendanceController.deleteAt
 route.get('/hod/attendance/report', checkAuth, AttendanceController.attendanceReport);
 route.get('/hod/attendance/export/pdf', checkAuth, AttendanceController.exportPDF);
 route.get('/hod/attendance/report/export/excel', checkAuth, AttendanceController.exportExcel);
+route.get("/hod/attendance/monthly-summary",checkAuth, AttendanceController.monthlySummary);
+
+//student ko so
+route.get("/student/my-attendance", checkAuth, AttendanceController.myAttendance);
+
+
 
 
 

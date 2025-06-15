@@ -22,6 +22,12 @@
   <!-- Main content -->
   <div class="content">
     <div class="container-fluid">
+      <% if (role === 'student' && !isComplete) { %>
+        <div class="alert alert-warning mt-3">
+          <strong>Note:</strong> Your profile is incomplete.
+          <a href="/uddateinfoStudent" class="btn btn-sm btn-outline-dark ml-2">Complete Now</a>
+        </div>
+      <% } %>
       <div class="row">
         <% if (role === 'admin') { %>
         <!-- Total Students -->
