@@ -18,6 +18,12 @@ const AdminSchema =mongoose.Schema({
         default:"admin"
         
     },
+    resetToken:{
+        type:String
+    },
+    resetTokenExpiry:{
+        type:String
+    }
     
 
 })

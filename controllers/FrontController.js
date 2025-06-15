@@ -7,6 +7,8 @@ const CompanyModel = require("../models/compnay");
 const JobModel = require("../models/job");
 const SelectedStudent = require("../models/student");
 const ApplicationModel = require('../models/ApplicationModel')
+const nodemailer = require("nodemailer");
+const crypto = require("crypto");
 
 class FrontController {
   static home = async (req, res) => {
@@ -252,5 +254,169 @@ class FrontController {
       res.redirect('/change-password');
     }
   }
+
+
+   // Show forgot password form
+  static forgotPasswordForm(req, res) {
+    res.render("forgot-password", {
+      success: req.flash("success"),
+      error: req.flash("error"),
+    });
+  }
+
+  static async forgotPassword(req, res) {
+    try {
+      const { email, role } = req.body;
+      let user;
+      let model;
+  
+      // Determine which model to use based on role
+      switch (role) {
+        case "admin":
+          model = AdminModel;
+          break;
+        case "hod":
+          model = HodModel;
+          break;
+        case "student":
+          model = StudentModel;
+          break;
+        case "company":
+          model = CompanyModel;
+          break;
+        default:
+          req.flash("error", "Invalid role");
+          return res.redirect("/forgot-password");
+      }
+  
+      user = await model.findOne({ email });
+  
+      if (!user) {
+        req.flash("error", `No ${role} found with that email`);
+        return res.redirect("/forgot-password");
+      }
+  
+      // Generate and save token
+      const token = crypto.randomBytes(20).toString("hex");
+      user.resetToken = token;
+      user.resetTokenExpiry = Date.now() + 3600000; // 1 hour
+      await user.save();
+  
+      // Email setup
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.MAIL_ID,
+          pass: process.env.MAIL_PASS,
+        },
+      });
+  
+      const resetURL = `http://${req.headers.host}/reset-password/${role}/${token}`;
+  
+      await transporter.sendMail({
+        to: user.email,
+        from: "no-reply@pninfosys.com",
+        subject: "Password Reset Request",
+        html: `<p>You requested a password reset.</p>
+               <p>Click <a href="${resetURL}">here</a> to reset your password.</p>`,
+      });
+  
+      req.flash("success", "Reset link sent to your email");
+      res.redirect("/forgot-password");
+    } catch (err) {
+      console.log(err);
+      req.flash("error", "Something went wrong");
+      res.redirect("/forgot-password");
+    }
+  }
+
+  static getModelByRole(role) {
+    // console.log(role)
+    switch (role) {
+      case "admin":
+        return AdminModel;
+      case "hod":
+        return HodModel;
+      case "student":
+        return StudentModel;
+      case "company":
+        return CompanyModel;
+      default:
+        return null;
+    }
+  }
+
+  static async getResetPassword(req, res) {
+    try {
+      const { role, token } = req.params;
+      console.log(role,token)
+      const Model = FrontController.getModelByRole(role);
+      console.log(Model)
+
+      if (!Model) {
+        req.flash("error", "Invalid role");
+        return res.redirect("/login");
+      }
+
+      const user = await Model.findOne({
+        resetToken: token,
+        resetTokenExpiry: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        req.flash("error", "Invalid or expired token");
+        return res.redirect("/forgot-password");
+      }
+
+      res.render("reset-password", { token, role });
+    } catch (err) {
+      console.log(err);
+      req.flash("error", "Server error");
+      res.redirect("/forgot-password");
+    }
+  }
+
+  static async postResetPassword(req, res) {
+    try {
+      const { role, token } = req.params;
+      const { password, confirmPassword } = req.body;
+      const Model = FrontController.getModelByRole(role);
+      console.log(Model)
+
+      if (!Model) {
+        req.flash("error", "Invalid role");
+        return res.redirect("/login");
+      }
+
+      const user = await Model.findOne({
+        resetToken: token,
+        resetTokenExpiry: { $gt: Date.now() },
+      });
+
+      if (!user) {
+        req.flash("error", "Invalid or expired token");
+        return res.redirect("/forgot-password");
+      }
+
+      if (password !== confirmPassword) {
+        req.flash("error", "Passwords do not match");
+        return res.redirect("back");
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
+      user.resetToken = undefined;
+      user.resetTokenExpiry = undefined;
+      await user.save();
+
+      req.flash("success", "Password reset successfully");
+      res.redirect("/login");
+    } catch (err) {
+      console.log(err);
+      req.flash("error", "Something went wrong");
+      res.redirect("/forgot-password");
+    }
+  }
+  
 }
 module.exports = FrontController;

@@ -35,6 +35,18 @@ route.get('/logout',FrontController.logout)
 route.get('/change-password', checkAuth, FrontController.changePasswordPage);
 route.post('/change-password', checkAuth, FrontController.changePassword);
 
+//forget passowrd
+route.get('/forgot-password',FrontController.forgotPasswordForm)
+route.post('/forgot-password1',FrontController.forgotPassword)
+route.get("/reset-password/:role/:token", FrontController.getResetPassword);
+route.post("/reset-password/:role/:token", FrontController.postResetPassword);
+
+
+
+
+
+
+
 
 
 

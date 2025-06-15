@@ -110,7 +110,13 @@
       type: String,
       enum: ['active', 'inactive'],
       default: 'active'
-    }
+    },
+    resetToken:{
+      type:String
+  },
+  resetTokenExpiry:{
+      type:String
+  }
 
   });
 
