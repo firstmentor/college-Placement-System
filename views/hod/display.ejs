@@ -36,7 +36,7 @@
             data-toggle="modal"
             data-target="#modal-default"
           >
-            Add HOD
+            Add Teacher
           </button>
 
           <% if(error.length> 0){ %>
@@ -57,7 +57,7 @@
             <thead>
               <tr>
                 <th>S.No</th>
-                <th>HOD Name</th>
+                <th>Teacher Name</th>
                 <th>Email</th>
                 <th>Phone</th>
                 <th>Department</th>
@@ -116,7 +116,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Add HOD</h4>
+        <h4 class="modal-title">Add Teacher</h4>
         <button
           type="button"
           class="close"
@@ -129,7 +129,7 @@
       <div class="modal-body">
         <form action="/inserthod" method="post" enctype="multipart/form-data">
           <div class="form-group">
-            <label for="">HOD Name</label>
+            <label for="">Teacher Name</label>
             <input type="text" name="name" class="form-control" required>
           </div>
           <div class="form-group">

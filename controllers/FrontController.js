@@ -60,14 +60,14 @@ class FrontController {
       let stats = {};
       let isComplete = true;
   
-      if (role === 'admin') {
+      if (role === 'administrator') {
         stats.totalStudents = await StudentModel.countDocuments();
         stats.totalHods = await HodModel.countDocuments();
         stats.totalCompanies = await CompanyModel.countDocuments();
         stats.totalJobs = await JobModel.countDocuments();
         stats.selectedStudents = await ApplicationModel.countDocuments({ status: 'Selected' });
   
-      } else if (role === 'hod') {
+      } else if (role === 'teacher') {
         const hod = await HodModel.findOne({ email: req.user.email });
         const dept = hod.department;
   
@@ -138,10 +138,10 @@ class FrontController {
       let user;
 
       switch (role) {
-        case "admin":
+        case "administrator":
           user = await AdminModel.findOne({ email });
           break;
-        case "hod":
+        case "teacher":
           user = await HodModel.findOne({ email });
           break;
         case "company":

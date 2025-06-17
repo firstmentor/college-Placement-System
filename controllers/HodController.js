@@ -14,27 +14,27 @@ class HodController {
     try {
       const role = req.user.role;
   
-      if (role === "admin") {
-        // Admin: show all HODs
-        const hod = await HodModel.find();
+      if (role === "administrator") {
+        // Admin: show all HODs, latest first
+        const hod = await HodModel.find().sort({ _id: -1 });
   
         return res.render("hod/display", {
           role,
           name: req.user.name,
           error: req.flash("error"),
           success: req.flash("success"),
-          hod,      // HOD list for admin
-          students: [], // Optional: for safety in EJS
+          hod,           // List of HODs
+          students: [],  // Optional: for safety in EJS
         });
       }
   
-      if (role === "hod") {
+      if (role === "teacher") {
         const email = req.user.email;
         const hodData = await HodModel.findOne({ email });
   
         if (hodData) {
           const department = hodData.department;
-          const students = await StudentModel.find({ branch: department });
+          const students = await StudentModel.find({ branch: department }).sort({ _id: -1 });
   
           return res.render("hod/display", {
             role,
@@ -42,10 +42,10 @@ class HodController {
             error: req.flash("error"),
             success: req.flash("success"),
             students,
-            hod: [], // Optional: for safety in EJS
+            hod: [],  // Optional: for safety in EJS
           });
         } else {
-          req.flash("error", "HOD not found");
+          req.flash("error", "Teacher not found");
           return res.redirect("/dashboard");
         }
       }
@@ -53,12 +53,14 @@ class HodController {
       // Other roles
       req.flash("error", "Unauthorized access");
       return res.redirect("/dashboard");
+  
     } catch (error) {
       console.log(error);
       req.flash("error", "Something went wrong");
       return res.redirect("/dashboard");
     }
   };
+  
   
   
 
@@ -248,7 +250,7 @@ class HodController {
       const department = req.user.department; // HOD's department
   
       // Step 1: Get students of this department
-      const students = await StudentModel.find({ department }, '_id');
+      const students = await StudentModel.find({ branch: department }, '_id'); // ✅ use 'branch' not 'department' in StudentModel
       const studentIds = students.map((s) => s._id);
   
       // Step 2: Get applications of those students
@@ -261,21 +263,27 @@ class HodController {
         })
         .populate({
           path: "jobId",
-          model: "Job", // ✅ Matches your Job model
+          model: "Job",
           populate: {
             path: "companyId",
-            model: "compnay", // ✅ Must match your corrected model ref
-            selete :"name"
+            model: "compnay", // ✅ Corrected spelling
+            select: "name",   // ✅ Fixed spelling
           },
-          })
+        })
         .sort({ appliedAt: -1 });
   
-      res.render('hod/department-applications', { applications });
+      res.render('hod/department-applications', {
+        applications,
+        success: req.flash("success"),
+        error: req.flash("error"),
+      });
     } catch (error) {
-      console.error(error);
+      console.error("Error in departmentWiseApplications:", error);
+      req.flash("error", "Failed to fetch applications");
       res.render('hod/department-applications', { applications: [] });
     }
   }
+  
 
 
   

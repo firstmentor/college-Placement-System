@@ -31,7 +31,7 @@ const HodSchema =mongoose.Schema({
     },
     role:{
         type:String,
-        default:"hod"
+        default:"teacher"
         
     },
     image: {

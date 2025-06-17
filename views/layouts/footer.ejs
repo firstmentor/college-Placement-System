@@ -36,26 +36,32 @@
 <script>
   $(document).ready(function () {
     if ($.fn.DataTable.isDataTable('#example1')) {
-      $('#example1').DataTable().destroy(); // ✔️ clear() mat lagao
+      $('#example1').DataTable().destroy(); // Prevent reinitialization
     }
 
     $('#example1').DataTable({
       responsive: true,
       autoWidth: false,
+      order: [[1, 'desc']], // ✅ Sort by Date column (2nd column, index 1)
       dom: 'Bfrtip',
       buttons: [
         {
           extend: 'excelHtml5',
-          text: '📥 Download Excel'
+          text: '📥 Download Excel',
+          title: 'Applications_Report'
         },
         {
           extend: 'pdfHtml5',
-          text: '📄 Download PDF'
+          text: '📄 Download PDF',
+          title: 'Applications_Report',
+          orientation: 'landscape',
+          pageSize: 'A4'
         }
       ]
     });
   });
 </script>
+
 
 
 </body>

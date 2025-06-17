@@ -15,7 +15,7 @@ const AdminSchema =mongoose.Schema({
     },
     role:{
         type:String,
-        default:"admin"
+        default:"administrator"
         
     },
     resetToken:{

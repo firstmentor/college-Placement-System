@@ -191,36 +191,44 @@ class CompnayController {
 
   static async companyViewApplications(req, res) {
     try {
-      const companyId = req.user.id; // assuming company is logged in
-
-      // Step 1: Find jobs posted by this company
-      const jobs = await JobModel.find({ companyId }, "_id");
-
-      // Step 2: Extract job IDs
-      const jobIds = jobs.map((job) => job._id);
-
-      // Step 3: Find applications for those jobs
+      const companyId = req.user.id;
+      const apps = await ApplicationModel.find().limit(5);
+// apps.forEach(app => {
+//   console.log("AppliedAt:", app.appliedAt);
+// });
+  
+      const jobs = await JobModel.find({ companyId }, '_id');
+      const jobIds = jobs.map(job => job._id);
+  
       const applications = await ApplicationModel.find({
-        jobId: { $in: jobIds },
+        jobId: { $in: jobIds }
       })
-        .populate("studentId") // get student details
-        .populate({
-          path: "jobId",
-          model: "Job", // ✅ Matches your Job model
-         
-          })// get job details
-        .sort({ appliedAt: -1 });
-        
-
+        .populate("studentId")
+        .populate("jobId")
+        .sort({ appliedAt: -1 }); // ✅ Latest first
+  
+      // Fallback fix: If appliedAt is missing or future-dated
+      const now = new Date();
+      for (let app of applications) {
+        if (!app.appliedAt || app.appliedAt > now) {
+          app.appliedAt = app._id.getTimestamp(); // Fix bad timestamps
+          await app.save();
+        }
+      }
+  
       res.render("company/applications", {
         applications,
-        success:req.flash('success')
+        success: req.flash('success')
       });
+  
     } catch (err) {
-      console.error(err);
-      
+      console.error("Error fetching applications:", err);
+      req.flash("error", "Could not fetch applications.");
+      res.redirect("/dashboard");
     }
   }
+  
+  
 
   static async updateApplicationStatus(req, res) {
     try {

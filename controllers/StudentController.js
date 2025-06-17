@@ -14,29 +14,30 @@ class StudentController {
     try {
       const role = req.user.role;
       const name = req.user.name;
-
+  
       let student = [];
-
-      if (role === "admin") {
-        // Admin: show all students
-        student = await StudentModel.find();
-      } else if (role === "hod") {
+  
+      if (role === "administrator") {
+        // Admin: show all students (latest first)
+        student = await StudentModel.find().sort({ _id: -1 });
+      } else if (role === "teacher") {
         // HOD: find own department from HOD model
         const email = req.user.email;
         const hodData = await HodModel.findOne({ email });
-
+  
         if (hodData) {
           const dept = hodData.department;
-          student = await StudentModel.find({ branch: dept });
+          // Only students from that department (latest first)
+          student = await StudentModel.find({ branch: dept }).sort({ _id: -1 });
         } else {
-          req.flash("error", "HOD not found");
+          req.flash("error", "teacher not found");
           return res.redirect("/dashboard");
         }
       } else {
         req.flash("error", "Unauthorized access");
         return res.redirect("/dashboard");
       }
-
+  
       res.render("students/display", {
         role,
         name,
@@ -50,6 +51,7 @@ class StudentController {
       return res.redirect("/dashboard");
     }
   };
+  
 
   static studentInsert = async (req, res) => {
     try {
@@ -64,6 +66,13 @@ class StudentController {
         branch,
         semester,
       } = req.body;
+
+      const student = await StudentModel.findOne({ email });
+      if (student) {
+        req.flash("error", "Email already registered");
+        return res.redirect("/student/display");
+      }
+  
 
       const password = "1234";
       const hashedPassword = await bcrypt.hash(password, 10);
@@ -238,7 +247,7 @@ class StudentController {
   static studentUpdateinfo = async (req, res) => {
     // console.log("hello");
     try {
-      console.log(req.body);
+      // console.log(req.body);
 
       const studentId = req.params.id;
       const { Xyear, Xmarks, XIIyear, XIImarks, GraYear, GraCGPA } = req.body;

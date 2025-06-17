@@ -13,7 +13,7 @@
         <img src="https://upload.wikimedia.org/wikipedia/en/6/6c/Jiwaji_University_logo.png" class="img-circle elevation-2" alt="User Image" />
       </div>
       <div class="info">
-        <a href="/dashboard" class="d-block" style="text-transform: uppercase; font-size: 14px;">Jiwaji University Gwalior<br> ( <%= name %> ( <%= department %>) ) </a>
+        <a href="/dashboard" class="d-block" style="text-transform: uppercase; font-size: 14px;">Jiwaji University Gwalior<br> ( <%= name %> <%= department %> )</a>
       </div>
     </div>
 
@@ -21,9 +21,9 @@
     <nav class="mt-2">
       <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
         
-        <% if(role === 'admin') { %>
+        <% if(role === 'administrator') { %>
           <li class="nav-item"><a href="/student/display" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Students</p></a></li>
-          <li class="nav-item"><a href="/hod/display" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i><p>HODs</p></a></li>
+          <li class="nav-item"><a href="/hod/display" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i><p>Teachers</p></a></li>
           <li class="nav-item"><a href="/company/display" class="nav-link"><i class="nav-icon fas fa-building"></i><p>Companies</p></a></li>
           <li class="nav-item"><a href="/student/jobs" class="nav-link"><i class="nav-icon fas fa-briefcase"></i><p>Openings</p></a></li>
           <li class="nav-item"><a href="/SelectedStudent/display" class="nav-link"><i class="nav-icon fas fa-user-check"></i><p>Selected Students</p></a></li>
@@ -37,8 +37,8 @@
           <li class="nav-item"><a href="/student/my-attendance" class="nav-link"><i class="nav-icon fas fa-paper-plane"></i><p>Attendance</p></a></li>
 
 
-        <% } else if(role === 'hod') { %>
-          <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i><p>HOD Dashboard ( <%= department %>)</p></a></li>
+        <% } else if(role === 'teacher') { %>
+          <li class="nav-item"><a href="/dashboard" class="nav-link"><i class="nav-icon fas fa-chalkboard-teacher"></i><p>Teacher Dashboard ( <%= department %>)</p></a></li>
           <li class="nav-item"><a href="/student/display" class="nav-link"><i class="nav-icon fas fa-users"></i><p>Students</p></a></li>
           <li class="nav-item"><a href="/placementDrive" class="nav-link"><i class="nav-icon fas fa-briefcase"></i><p>Placement Drive</p></a></li>
           <li class="nav-item"><a href="/hod/attendance" class="nav-link"><i class="nav-icon fas fa-briefcase"></i><p>Attendance</p></a></li>

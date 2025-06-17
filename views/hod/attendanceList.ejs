@@ -64,8 +64,8 @@
               <% } else { %>
                 <% records.forEach(r => { %>
                   <tr>
-                    <td><%= r.studentId.name %></td>
-                    <td><%= r.date.toDateString() %></td>
+                    <td><%= r.studentId?.name || "Unknown Student" %></td>
+                    <td><%= r.date?.toDateString?.() || "N/A" %></td>
                     <td><%= r.status %></td>
                     <td>
                       <a href="/hod/attendance/edit/<%= r._id %>" class="btn btn-sm btn-warning">Edit</a>
@@ -74,7 +74,7 @@
                   </tr>
                 <% }) %>
               <% } %>
-            </tbody>
+              
           </table>
         </div>
         
